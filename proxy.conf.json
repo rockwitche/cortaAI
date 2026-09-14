@@ -1,0 +1,12 @@
+{
+  "/api": {
+    "target": "https://barberbook-awgp.onrender.com",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/uploads": {
+    "target": "https://barberbook-awgp.onrender.com",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

@@ -1,0 +1,54 @@
+@use '../auth-shell';
+
+.auth-layout-login .cartao-login {
+  width: min(100%, 428px);
+  margin: auto;
+}
+
+.auth-layout-login .formulario-login {
+  gap: 20px;
+}
+
+.auth-layout-login .botao-login {
+  margin-top: 4px;
+}
+
+.auth-layout-login .opcao-lembrete {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin: -6px 0 2px;
+  color: #556675;
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #d99a17;
+    cursor: pointer;
+  }
+
+  span {
+    display: grid;
+    gap: 1px;
+  }
+
+  strong {
+    color: #102438;
+    font-size: 0.87rem;
+    font-weight: 700;
+  }
+
+  small {
+    font-size: 0.73rem;
+  }
+}
+
+@media (max-width: 840px) {
+  .auth-layout-login .cartao-login {
+    margin: 34px auto 0;
+  }
+}
