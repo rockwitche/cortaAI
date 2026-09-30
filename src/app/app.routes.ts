@@ -14,5 +14,10 @@ export const routes: Routes = [
     path: 'registro',
     loadComponent: () => import('./pages/registro/registro').then(m => m.RegistroComponent),
   },
+  {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
+  },
   { path: '**', redirectTo: 'barbearias' },
 ];

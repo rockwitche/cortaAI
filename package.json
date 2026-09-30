@@ -29,6 +29,12 @@
     "@angular/platform-browser": "^21.2.20",
     "@angular/router": "^21.2.20",
     "@fortawesome/fontawesome-free": "^7.2.0",
+    "@primeuix/themes": "^3.0.1",
+    "@types/leaflet": "^1.9.22",
+    "leaflet": "^1.9.4",
+    "material-icons": "^1.13.14",
+    "primeicons": "^8.0.2",
+    "primeng": "^21.1.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

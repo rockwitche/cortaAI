@@ -1,0 +1,196 @@
+<div class="dashboard-layout" [class.collapsed]="menuLateralRecolhido" [class.mobile]="ehVisaoMobile" [class.mobile-menu-open]="menuMobileAberto">
+  @if (ehVisaoMobile && menuMobileAberto) {
+    <button class="sidebar-backdrop" (click)="fecharMenuMobile()" aria-label="Fechar menu"></button>
+  }
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a routerLink="/" class="sidebar-logo" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-scissors"></i>
+        @if (!menuLateralRecolhido) {
+          <span>CortaAí</span>
+        }
+      </a>
+
+      @if (!ehVisaoMobile) {
+        <button class="sidebar-toggle" (click)="alternarMenuLateral()">
+          <i [class]="menuLateralRecolhido ? 'fa-solid fa-angles-right' : 'fa-solid fa-angles-left'"></i>
+        </button>
+      } @else {
+        <button class="sidebar-mobile-close" (click)="fecharMenuMobile()" aria-label="Fechar menu lateral">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" class="nav-item" [class.active]="rotaAtiva === '/dashboard'" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-chart-line"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Painel</span>
+        }
+      </a>
+
+      <a routerLink="/dashboard/barbearias" class="nav-item" [class.active]="rotaEstaAtiva('/dashboard/barbearias')" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-store"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Minhas Barbearias</span>
+        }
+      </a>
+
+      <a routerLink="/dashboard/agenda" class="nav-item" [class.active]="rotaEstaAtiva('/dashboard/agenda')" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-calendar-days"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Agenda</span>
+        }
+      </a>
+
+      <a routerLink="/dashboard/clientes" class="nav-item" [class.active]="rotaEstaAtiva('/dashboard/clientes')" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-users"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Clientes</span>
+        }
+      </a>
+
+      <a routerLink="/dashboard/planos" class="nav-item" [class.active]="rotaEstaAtiva('/dashboard/planos')" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-crown"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Planos</span>
+        }
+      </a>
+
+      <a routerLink="/dashboard/suporte" class="nav-item" [class.active]="rotaEstaAtiva('/dashboard/suporte')" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-headset"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Suporte</span>
+        }
+      </a>
+
+      <div class="nav-separator"></div>
+
+      <a routerLink="/perfil" class="nav-item" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-user-gear"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Meu Perfil</span>
+        }
+      </a>
+
+      <button class="nav-item nav-logout" (click)="fecharMenuMobile()">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        @if (!menuLateralRecolhido) {
+          <span>Sair</span>
+        }
+      </button>
+    </nav>
+
+    @if (!menuLateralRecolhido) {
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="sidebar-avatar-placeholder">
+            G
+          </div>
+          <div class="user-details">
+            <span class="user-name">Gabriel Ramos</span>
+            <div class="user-meta">
+              <span class="user-role">BARBEIRO</span>
+              <span class="user-plano plano-basico">BASICO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </aside>
+
+  <!-- Main content -->
+  <main class="dashboard-main">
+    @if (ehVisaoMobile) {
+      <header class="mobile-topbar">
+        <button class="mobile-menu-btn" (click)="alternarMenuMobile()" aria-label="Abrir menu lateral">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h2>{{ obterTituloPaginaAtual() }}</h2>
+      </header>
+    }
+
+    <div class="dashboard-content">
+      <div class="overview-header">
+        <h1>Painel do Barbeiro</h1>
+        <p>Bem-vindo, Gabriel Ramos!</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon gray">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div class="stat-info horizontal">
+            <p class="stat-value">1</p>
+            <h3>Barbearias</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-info horizontal">
+            <p class="stat-value">1</p>
+            <h3>Ativas</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <i class="fa-solid fa-calendar-day"></i>
+          </div>
+          <div class="stat-info horizontal">
+            <p class="stat-value">0</p>
+            <h3>Agendamentos hoje</h3>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="stat-info horizontal">
+            <p class="stat-value">4</p>
+            <h3>Clientes</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-actions-section">
+        <h2>Ações rápidas</h2>
+        <div class="quick-actions-grid">
+          <button class="action-card">
+            <i class="fa-solid fa-plus"></i>
+            <span>Adicionar Barbearia</span>
+          </button>
+          <button class="action-card">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Ver Agenda</span>
+          </button>
+          <button class="action-card">
+            <i class="fa-solid fa-user-pen"></i>
+            <span>Editar Perfil</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="barbershops-section">
+        <div class="section-header">
+          <h2>Minhas Barbearias</h2>
+          <a href="#" class="view-all">Ver todas <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        
+        <div class="barbershop-list">
+          <div class="barbershop-item">
+            <div class="barbershop-details">
+              <h4>Barbearia de exemplo</h4>
+              <p>Picos, PI</p>
+            </div>
+            <div class="barbershop-status status-active">Ativa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
