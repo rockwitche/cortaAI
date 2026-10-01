@@ -276,6 +276,9 @@
                 <i class="fa-solid fa-map-pin"></i> {{ barbearia.pontoReferencia }}
               </div>
             }
+            <a class="botao-agendar" [routerLink]="['/agendar', barbearia.slug || barbearia.id]">
+              Agendar
+            </a>
           </div>
 
         </div>
