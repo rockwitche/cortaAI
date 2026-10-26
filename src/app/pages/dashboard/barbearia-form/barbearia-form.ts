@@ -93,6 +93,7 @@ export class BarbeariaFormComponent implements OnInit, AfterViewInit, OnDestroy 
   buscandoEndereco = false;
   private mapa: L.Map | null = null;
   private marcador: L.Marker | null = null;
+  private observadorMapa: ResizeObserver | null = null;
   private mapaInicializado = false;
 
   // Fotos da barbearia
@@ -216,6 +217,7 @@ export class BarbeariaFormComponent implements OnInit, AfterViewInit, OnDestroy 
       this.mapa.remove();
       this.mapa = null;
     }
+    this.observadorMapa?.disconnect();
   }
 
   @HostListener('document:click', ['$event'])
@@ -417,32 +419,34 @@ export class BarbeariaFormComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     });
 
+    // O dashboard pode terminar a animação/layout depois de o Leaflet iniciar.
+    // Recalcular o tamanho evita tiles presos no canto e mantém o clique em toda a área.
+    this.observadorMapa = new ResizeObserver(() => this.mapa?.invalidateSize({ pan: false }));
+    this.observadorMapa.observe(container);
+    requestAnimationFrame(() => this.mapa?.invalidateSize({ pan: false }));
+
     this.mapaInicializado = true;
   }
 
   buscarEndereco() {
-    const query = `${this.endereco}, ${this.cidade}, ${this.estado}, Brasil`;
     this.buscandoEndereco = true;
 
     this.http
-      .get<any[]>(`https://nominatim.openstreetmap.org/search`, {
+      .get<{ resultados: Array<{ latitude: number; longitude: number; nome: string }> }>(`${this.apiUrl}/mapa/buscar`, {
         params: {
-          q: query,
-          format: 'json',
-          limit: '1',
-          countrycodes: 'br',
-        },
-        headers: {
-          'Accept-Language': 'pt-BR',
+          endereco: this.endereco.trim(),
+          ...(this.cidade.trim() ? { cidade: this.cidade.trim() } : {}),
+          ...(this.estado.trim() ? { estado: this.estado.trim() } : {}),
+          ...(this.cep ? { cep: this.cep } : {}),
         },
       })
       .subscribe({
         next: (results) => {
           this.buscandoEndereco = false;
-          if (results && results.length > 0) {
-            const r = results[0];
-            this.latitude = parseFloat(r.lat);
-            this.longitude = parseFloat(r.lon);
+          const r = results.resultados[0];
+          if (r) {
+            this.latitude = r.latitude;
+            this.longitude = r.longitude;
 
             if (this.mapa) {
               this.mapa.setView([this.latitude!, this.longitude!], 17);
@@ -467,6 +471,13 @@ export class BarbeariaFormComponent implements OnInit, AfterViewInit, OnDestroy 
           alert('Erro ao buscar endereço. Tente novamente.');
         },
       });
+  }
+
+  aplicarMascaraCep(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const numeros = input.value.replace(/\D/g, '').slice(0, 8);
+    this.cep = numeros.length > 5 ? `${numeros.slice(0, 5)}-${numeros.slice(5)}` : numeros;
+    input.value = this.cep;
   }
 
   carregarBarbearia() {

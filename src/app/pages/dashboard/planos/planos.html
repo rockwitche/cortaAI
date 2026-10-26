@@ -1,0 +1,42 @@
+<section class="planos-page">
+  @if (aviso) {
+    <div class="aviso" role="status"><i class="fa-solid fa-circle-info"></i>{{ aviso }}</div>
+  }
+
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">CORTAAÍ PARA BARBEIROS</p>
+      <h1>Planos para o seu negócio</h1>
+      <p>Escolha o plano que acompanha o momento da sua barbearia.</p>
+    </div>
+    <button class="link-btn" (click)="voltarParaBarbearias()">Minhas barbearias <i class="fa-solid fa-arrow-right"></i></button>
+  </header>
+
+  <div class="plano-atual">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Seu plano atual</span>
+    <strong>{{ planoAtual | titlecase }}</strong>
+  </div>
+
+  <div class="planos-grid">
+    @for (plano of planos; track plano.id) {
+      <article class="plano-card" [class.destaque]="plano.destaque" [class.atual]="plano.id === planoAtual">
+        @if (plano.destaque) { <span class="popular">Mais popular</span> }
+        <div class="plano-icone"><i [class]="plano.icone"></i></div>
+        <h2>{{ plano.nome }}</h2>
+        <p class="preco">{{ plano.preco }}</p>
+        <p class="descricao">{{ plano.descricao }}</p>
+        <ul>
+          @for (recurso of plano.recursos; track recurso) {
+            <li><i class="fa-solid fa-check"></i>{{ recurso }}</li>
+          }
+        </ul>
+        <button class="btn-plano" [class.ativo]="plano.id === planoAtual" (click)="selecionar(plano)" [disabled]="plano.id === planoAtual">
+          {{ plano.id === planoAtual ? 'Plano atual' : plano.id === 'BASICO' ? 'Selecionar' : 'Fazer upgrade' }}
+        </button>
+      </article>
+    }
+  </div>
+
+  <p class="rodape">Você pode mudar de plano quando quiser. O checkout será disponibilizado em breve.</p>
+</section>

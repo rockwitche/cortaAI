@@ -100,7 +100,7 @@ export class AuthController {
       );
     }
 
-    return { message: 'Login realizado com sucesso.' };
+    return { message: 'Login realizado com sucesso.', user: result.user };
   }
 
   // ─── Verificação de e-mail ───────────────────────────────────────────────────

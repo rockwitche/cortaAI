@@ -18,26 +18,32 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () =>
       import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
-  },
-  {
-    path: 'dashboard/barbearias',
-    loadComponent: () =>
-      import('./pages/dashboard/barbearias-list/barbearias-list').then((m) => m.BarbeariasListComponent),
-  },
-  {
-    path: 'dashboard/barbearias/nova',
-    loadComponent: () =>
-      import('./pages/dashboard/barbearia-form/barbearia-form').then((m) => m.BarbeariaFormComponent),
-  },
-  {
-    path: 'dashboard/barbearias/:id',
-    loadComponent: () =>
-      import('./pages/dashboard/barbearia-form/barbearia-form').then((m) => m.BarbeariaFormComponent),
-  },
-  {
-    path: 'dashboard/agenda',
-    loadComponent: () =>
-      import('./pages/dashboard/agenda/agenda').then((m) => m.AgendaComponent),
+    children: [
+      {
+        path: 'barbearias',
+        loadComponent: () =>
+          import('./pages/dashboard/barbearias-list/barbearias-list').then((m) => m.BarbeariasListComponent),
+      },
+      {
+        path: 'barbearias/nova',
+        loadComponent: () =>
+          import('./pages/dashboard/barbearia-form/barbearia-form').then((m) => m.BarbeariaFormComponent),
+      },
+      {
+        path: 'barbearias/:id',
+        loadComponent: () =>
+          import('./pages/dashboard/barbearia-form/barbearia-form').then((m) => m.BarbeariaFormComponent),
+      },
+      {
+        path: 'agenda',
+        loadComponent: () =>
+          import('./pages/dashboard/agenda/agenda').then((m) => m.AgendaComponent),
+      },
+      {
+        path: 'planos',
+        loadComponent: () => import('./pages/dashboard/planos/planos').then((m) => m.PlanosComponent),
+      },
+    ],
   },
   { path: '**', redirectTo: 'barbearias' },
 ];

@@ -5,6 +5,10 @@ import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UserModule } from './user/user.module.js';
+import { BarbeariaModule } from './barbearia/barbearia.module.js';
+import { BarbeiroModule } from './barbeiro/barbeiro.module.js';
+import { ServicoModule } from './servico/servico.module.js';
+import { MapaModule } from './mapa/mapa.module.js';
 
 @Module({
   imports: [
@@ -19,6 +23,10 @@ import { UserModule } from './user/user.module.js';
     AuthModule,
     // Módulo de usuário (perfil, avatar, exclusão de conta)
     UserModule,
+    BarbeariaModule,
+    BarbeiroModule,
+    ServicoModule,
+    MapaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

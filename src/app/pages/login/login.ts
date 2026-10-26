@@ -79,7 +79,10 @@ export class LoginComponent {
           return;
         }
 
-        const navegou = await this.roteador.navigate(['/barbearias']);
+        const destino = resposta.user.tipo === 'BARBEIRO' || resposta.user.tipo === 'ADMIN'
+          ? ['/dashboard']
+          : ['/barbearias'];
+        const navegou = await this.roteador.navigate(destino);
 
         if (!navegou) {
           this.erro = 'O login foi concluído, mas não foi possível abrir a próxima página.';

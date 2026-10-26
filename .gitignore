@@ -52,3 +52,7 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Prompts
+prompts_para_cards.md
+prompt_para_cards.md

@@ -446,7 +446,7 @@
 
           <div class="campo">
             <label for="cep">CEP</label>
-            <input type="text" id="cep" [(ngModel)]="cep" name="cep" placeholder="00000-000" />
+            <input type="text" id="cep" [(ngModel)]="cep" (input)="aplicarMascaraCep($event)" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" />
           </div>
         </div>
 

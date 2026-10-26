@@ -17,6 +17,7 @@ enum UserType {
 
 enum Plano {
   BASICO
+  PROFISSIONAL
   PREMIUM
 }
 
@@ -44,5 +45,73 @@ model User {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
+  barbearias           Barbearia[]
+
   @@map("users")
+}
+
+model Barbearia {
+  id              String    @id @default(uuid())
+  nome            String
+  slug            String    @unique
+  descricao       String?
+  endereco        String
+  cidade          String
+  estado          String
+  cep             String?
+  pontoReferencia String?
+  latitude        Float?
+  longitude       Float?
+  telefone        String?
+  whatsapp        String?
+  mensagemLembrete String?
+  lembreteAtivo   Boolean   @default(false)
+  foto            String?
+  fotos           String[]  @default([])
+  ownerId         String
+  owner           User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ativa           Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  barbeiros       Barbeiro[]
+  servicos        Servico[]
+
+  @@index([ativa, estado, cidade])
+  @@index([ownerId])
+  @@map("barbearias")
+}
+
+model Barbeiro {
+  id           String     @id @default(uuid())
+  nome         String
+  foto         String?
+  barbeariaId  String
+  barbearia    Barbearia @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  ativo        Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  servicos     Servico[]
+
+  @@index([barbeariaId])
+  @@map("barbeiros")
+}
+
+model Servico {
+  id           String     @id @default(uuid())
+  nome         String
+  preco        Float
+  duracao      Int
+  barbeariaId  String
+  barbearia    Barbearia @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  barbeiroId   String?
+  barbeiro     Barbeiro? @relation(fields: [barbeiroId], references: [id], onDelete: SetNull)
+  ativo        Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([barbeariaId])
+  @@index([barbeiroId])
+  @@map("servicos")
 }

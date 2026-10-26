@@ -113,6 +113,7 @@
     }
 
     <div class="dashboard-content">
+      @if (rotaAtiva === '/dashboard') {
       <div class="overview-header">
         <h1>Painel do Barbeiro</h1>
         <p>Bem-vindo, Gabriel Ramos!</p>
@@ -191,6 +192,9 @@
           </div>
         </div>
       </div>
+      } @else {
+        <router-outlet></router-outlet>
+      }
     </div>
   </main>
 </div>
