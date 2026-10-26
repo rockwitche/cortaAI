@@ -87,13 +87,13 @@
       <div class="sidebar-footer">
         <div class="user-info">
           <div class="sidebar-avatar-placeholder">
-            G
+            {{ inicialUsuario }}
           </div>
           <div class="user-details">
-            <span class="user-name">Gabriel Ramos</span>
+            <span class="user-name">{{ usuario?.nome || 'Barbeiro' }}</span>
             <div class="user-meta">
-              <span class="user-role">BARBEIRO</span>
-              <span class="user-plano plano-basico">BASICO</span>
+              <span class="user-role">{{ usuario?.tipo || 'BARBEIRO' }}</span>
+              <span class="user-plano plano-basico">{{ usuario?.plano || 'BASICO' }}</span>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@
       @if (rotaAtiva === '/dashboard') {
       <div class="overview-header">
         <h1>Painel do Barbeiro</h1>
-        <p>Bem-vindo, Gabriel Ramos!</p>
+        <p>Bem-vindo, {{ primeiroNomeUsuario }}!</p>
       </div>
 
       <div class="stats-grid">
@@ -125,7 +125,7 @@
             <i class="fa-solid fa-store"></i>
           </div>
           <div class="stat-info horizontal">
-            <p class="stat-value">1</p>
+            <p class="stat-value">{{ carregandoBarbearias ? '—' : barbearias.length }}</p>
             <h3>Barbearias</h3>
           </div>
         </div>
@@ -134,7 +134,7 @@
             <i class="fa-solid fa-circle-check"></i>
           </div>
           <div class="stat-info horizontal">
-            <p class="stat-value">1</p>
+            <p class="stat-value">{{ carregandoBarbearias ? '—' : totalBarbeariasAtivas }}</p>
             <h3>Ativas</h3>
           </div>
         </div>
@@ -152,7 +152,7 @@
             <i class="fa-solid fa-users"></i>
           </div>
           <div class="stat-info horizontal">
-            <p class="stat-value">4</p>
+            <p class="stat-value">—</p>
             <h3>Clientes</h3>
           </div>
         </div>
@@ -161,15 +161,15 @@
       <div class="quick-actions-section">
         <h2>Ações rápidas</h2>
         <div class="quick-actions-grid">
-          <button class="action-card">
+          <button class="action-card" routerLink="/dashboard/barbearias/nova">
             <i class="fa-solid fa-plus"></i>
             <span>Adicionar Barbearia</span>
           </button>
-          <button class="action-card">
+          <button class="action-card" routerLink="/dashboard/agenda">
             <i class="fa-solid fa-calendar-days"></i>
             <span>Ver Agenda</span>
           </button>
-          <button class="action-card">
+          <button class="action-card" routerLink="/perfil">
             <i class="fa-solid fa-user-pen"></i>
             <span>Editar Perfil</span>
           </button>
@@ -179,18 +179,32 @@
       <div class="barbershops-section">
         <div class="section-header">
           <h2>Minhas Barbearias</h2>
-          <a href="#" class="view-all">Ver todas <i class="fa-solid fa-arrow-right"></i></a>
+          <a routerLink="/dashboard/barbearias" class="view-all">Ver todas <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        
-        <div class="barbershop-list">
-          <div class="barbershop-item">
-            <div class="barbershop-details">
-              <h4>Barbearia de exemplo</h4>
-              <p>Picos, PI</p>
-            </div>
-            <div class="barbershop-status status-active">Ativa</div>
+
+        @if (carregandoBarbearias) {
+          <div class="barbershop-empty"><i class="fa-solid fa-spinner fa-spin"></i> Carregando barbearias...</div>
+        } @else if (barbearias.length) {
+          <div class="barbershop-list">
+            @for (barbearia of barbearias; track barbearia.id) {
+              <a class="barbershop-item" [routerLink]="['/dashboard/barbearias', barbearia.id]">
+                <div class="barbershop-details">
+                  <h4>{{ barbearia.nome }}</h4>
+                  <p>{{ barbearia.cidade }}, {{ barbearia.estado }}</p>
+                </div>
+                <div class="barbershop-status" [class.status-active]="barbearia.ativa" [class.status-inactive]="!barbearia.ativa">
+                  {{ barbearia.ativa ? 'Ativa' : 'Inativa' }}
+                </div>
+              </a>
+            }
           </div>
-        </div>
+        } @else {
+          <div class="barbershop-empty">
+            <i class="fa-solid fa-store"></i>
+            <div><strong>Você ainda não tem barbearias cadastradas.</strong><span>Comece criando a primeira para montar sua agenda.</span></div>
+            <a routerLink="/dashboard/barbearias/nova">Criar barbearia</a>
+          </div>
+        }
       </div>
       } @else {
         <router-outlet></router-outlet>
