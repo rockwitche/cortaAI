@@ -93,9 +93,26 @@ model Barbeiro {
   updatedAt    DateTime   @updatedAt
 
   servicos     Servico[]
+  horarios     HorarioDisponivel[]
 
   @@index([barbeariaId])
   @@map("barbeiros")
+}
+
+model HorarioDisponivel {
+  id           String   @id @default(uuid())
+  barbeiroId   String
+  barbeiro     Barbeiro @relation(fields: [barbeiroId], references: [id], onDelete: Cascade)
+  diaSemana    Int
+  horaInicio   String
+  horaFim      String
+  almocoInicio String?
+  almocoFim    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([barbeiroId])
+  @@map("horarios_disponiveis")
 }
 
 model Servico {

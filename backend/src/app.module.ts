@@ -9,6 +9,7 @@ import { BarbeariaModule } from './barbearia/barbearia.module.js';
 import { BarbeiroModule } from './barbeiro/barbeiro.module.js';
 import { ServicoModule } from './servico/servico.module.js';
 import { MapaModule } from './mapa/mapa.module.js';
+import { HorarioModule } from './horario/horario.module.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MapaModule } from './mapa/mapa.module.js';
     BarbeiroModule,
     ServicoModule,
     MapaModule,
+    HorarioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

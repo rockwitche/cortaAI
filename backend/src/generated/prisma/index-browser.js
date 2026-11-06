@@ -145,6 +145,64 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BarbeariaScalarFieldEnum = {
+  id: 'id',
+  nome: 'nome',
+  slug: 'slug',
+  descricao: 'descricao',
+  endereco: 'endereco',
+  cidade: 'cidade',
+  estado: 'estado',
+  cep: 'cep',
+  pontoReferencia: 'pontoReferencia',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  telefone: 'telefone',
+  whatsapp: 'whatsapp',
+  mensagemLembrete: 'mensagemLembrete',
+  lembreteAtivo: 'lembreteAtivo',
+  foto: 'foto',
+  fotos: 'fotos',
+  ownerId: 'ownerId',
+  ativa: 'ativa',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BarbeiroScalarFieldEnum = {
+  id: 'id',
+  nome: 'nome',
+  foto: 'foto',
+  barbeariaId: 'barbeariaId',
+  ativo: 'ativo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.HorarioDisponivelScalarFieldEnum = {
+  id: 'id',
+  barbeiroId: 'barbeiroId',
+  diaSemana: 'diaSemana',
+  horaInicio: 'horaInicio',
+  horaFim: 'horaFim',
+  almocoInicio: 'almocoInicio',
+  almocoFim: 'almocoFim',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ServicoScalarFieldEnum = {
+  id: 'id',
+  nome: 'nome',
+  preco: 'preco',
+  duracao: 'duracao',
+  barbeariaId: 'barbeariaId',
+  barbeiroId: 'barbeiroId',
+  ativo: 'ativo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -166,11 +224,16 @@ exports.UserType = exports.$Enums.UserType = {
 
 exports.Plano = exports.$Enums.Plano = {
   BASICO: 'BASICO',
+  PROFISSIONAL: 'PROFISSIONAL',
   PREMIUM: 'PREMIUM'
 };
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Barbearia: 'Barbearia',
+  Barbeiro: 'Barbeiro',
+  HorarioDisponivel: 'HorarioDisponivel',
+  Servico: 'Servico'
 };
 
 /**
