@@ -46,6 +46,7 @@ model User {
   updatedAt            DateTime  @updatedAt
 
   barbearias           Barbearia[]
+  agendamentos         Agendamento[] @relation("AgendamentoUser")
 
   @@map("users")
 }
@@ -76,6 +77,7 @@ model Barbearia {
 
   barbeiros       Barbeiro[]
   servicos        Servico[]
+  agendamentos    Agendamento[]
 
   @@index([ativa, estado, cidade])
   @@index([ownerId])
@@ -94,6 +96,7 @@ model Barbeiro {
 
   servicos     Servico[]
   horarios     HorarioDisponivel[]
+  agendamentos Agendamento[]
 
   @@index([barbeariaId])
   @@map("barbeiros")
@@ -128,7 +131,42 @@ model Servico {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  agendamentos Agendamento[]
+
   @@index([barbeariaId])
   @@index([barbeiroId])
   @@map("servicos")
+}
+
+enum StatusAgendamento {
+  PENDENTE
+  CONFIRMADO
+  CONCLUIDO
+  CANCELADO
+}
+
+model Agendamento {
+  id               String             @id @default(uuid())
+  data             String
+  horario          String
+  nomeCliente      String
+  telefoneCliente  String
+  status           StatusAgendamento  @default(PENDENTE)
+  guestTokenHash   String?
+  lembreteEnviado  Boolean            @default(false)
+  userId           String?
+  user             User?              @relation("AgendamentoUser", fields: [userId], references: [id], onDelete: SetNull)
+  barbeariaId      String
+  barbearia        Barbearia          @relation(fields: [barbeariaId], references: [id], onDelete: Cascade)
+  barbeiroId       String
+  barbeiro         Barbeiro           @relation(fields: [barbeiroId], references: [id], onDelete: Cascade)
+  servicoId        String
+  servico          Servico            @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([barbeariaId, data])
+  @@index([barbeiroId, data])
+  @@index([userId])
+  @@map("agendamentos")
 }

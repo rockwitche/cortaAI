@@ -38,6 +38,11 @@ export type HorarioDisponivel = $Result.DefaultSelection<Prisma.$HorarioDisponiv
  * 
  */
 export type Servico = $Result.DefaultSelection<Prisma.$ServicoPayload>
+/**
+ * Model Agendamento
+ * 
+ */
+export type Agendamento = $Result.DefaultSelection<Prisma.$AgendamentoPayload>
 
 /**
  * Enums
@@ -59,6 +64,16 @@ export const Plano: {
 
 export type Plano = (typeof Plano)[keyof typeof Plano]
 
+
+export const StatusAgendamento: {
+  PENDENTE: 'PENDENTE',
+  CONFIRMADO: 'CONFIRMADO',
+  CONCLUIDO: 'CONCLUIDO',
+  CANCELADO: 'CANCELADO'
+};
+
+export type StatusAgendamento = (typeof StatusAgendamento)[keyof typeof StatusAgendamento]
+
 }
 
 export type UserType = $Enums.UserType
@@ -68,6 +83,10 @@ export const UserType: typeof $Enums.UserType
 export type Plano = $Enums.Plano
 
 export const Plano: typeof $Enums.Plano
+
+export type StatusAgendamento = $Enums.StatusAgendamento
+
+export const StatusAgendamento: typeof $Enums.StatusAgendamento
 
 /**
  * ##  Prisma Client ʲˢ
@@ -239,6 +258,16 @@ export class PrismaClient<
     * ```
     */
   get servico(): Prisma.ServicoDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.agendamento`: Exposes CRUD operations for the **Agendamento** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Agendamentos
+    * const agendamentos = await prisma.agendamento.findMany()
+    * ```
+    */
+  get agendamento(): Prisma.AgendamentoDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -690,7 +719,8 @@ export namespace Prisma {
     Barbearia: 'Barbearia',
     Barbeiro: 'Barbeiro',
     HorarioDisponivel: 'HorarioDisponivel',
-    Servico: 'Servico'
+    Servico: 'Servico',
+    Agendamento: 'Agendamento'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -706,7 +736,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "barbearia" | "barbeiro" | "horarioDisponivel" | "servico"
+      modelProps: "user" | "barbearia" | "barbeiro" | "horarioDisponivel" | "servico" | "agendamento"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1080,6 +1110,80 @@ export namespace Prisma {
           }
         }
       }
+      Agendamento: {
+        payload: Prisma.$AgendamentoPayload<ExtArgs>
+        fields: Prisma.AgendamentoFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AgendamentoFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AgendamentoFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>
+          }
+          findFirst: {
+            args: Prisma.AgendamentoFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AgendamentoFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>
+          }
+          findMany: {
+            args: Prisma.AgendamentoFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>[]
+          }
+          create: {
+            args: Prisma.AgendamentoCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>
+          }
+          createMany: {
+            args: Prisma.AgendamentoCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AgendamentoCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>[]
+          }
+          delete: {
+            args: Prisma.AgendamentoDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>
+          }
+          update: {
+            args: Prisma.AgendamentoUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>
+          }
+          deleteMany: {
+            args: Prisma.AgendamentoDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AgendamentoUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AgendamentoUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>[]
+          }
+          upsert: {
+            args: Prisma.AgendamentoUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AgendamentoPayload>
+          }
+          aggregate: {
+            args: Prisma.AgendamentoAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAgendamento>
+          }
+          groupBy: {
+            args: Prisma.AgendamentoGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AgendamentoGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AgendamentoCountArgs<ExtArgs>
+            result: $Utils.Optional<AgendamentoCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1208,6 +1312,7 @@ export namespace Prisma {
     barbeiro?: BarbeiroOmit
     horarioDisponivel?: HorarioDisponivelOmit
     servico?: ServicoOmit
+    agendamento?: AgendamentoOmit
   }
 
   /* Types for Logging */
@@ -1289,10 +1394,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     barbearias: number
+    agendamentos: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     barbearias?: boolean | UserCountOutputTypeCountBarbeariasArgs
+    agendamentos?: boolean | UserCountOutputTypeCountAgendamentosArgs
   }
 
   // Custom InputTypes
@@ -1313,6 +1420,13 @@ export namespace Prisma {
     where?: BarbeariaWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAgendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgendamentoWhereInput
+  }
+
 
   /**
    * Count Type BarbeariaCountOutputType
@@ -1321,11 +1435,13 @@ export namespace Prisma {
   export type BarbeariaCountOutputType = {
     barbeiros: number
     servicos: number
+    agendamentos: number
   }
 
   export type BarbeariaCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     barbeiros?: boolean | BarbeariaCountOutputTypeCountBarbeirosArgs
     servicos?: boolean | BarbeariaCountOutputTypeCountServicosArgs
+    agendamentos?: boolean | BarbeariaCountOutputTypeCountAgendamentosArgs
   }
 
   // Custom InputTypes
@@ -1353,6 +1469,13 @@ export namespace Prisma {
     where?: ServicoWhereInput
   }
 
+  /**
+   * BarbeariaCountOutputType without action
+   */
+  export type BarbeariaCountOutputTypeCountAgendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgendamentoWhereInput
+  }
+
 
   /**
    * Count Type BarbeiroCountOutputType
@@ -1361,11 +1484,13 @@ export namespace Prisma {
   export type BarbeiroCountOutputType = {
     servicos: number
     horarios: number
+    agendamentos: number
   }
 
   export type BarbeiroCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     servicos?: boolean | BarbeiroCountOutputTypeCountServicosArgs
     horarios?: boolean | BarbeiroCountOutputTypeCountHorariosArgs
+    agendamentos?: boolean | BarbeiroCountOutputTypeCountAgendamentosArgs
   }
 
   // Custom InputTypes
@@ -1391,6 +1516,44 @@ export namespace Prisma {
    */
   export type BarbeiroCountOutputTypeCountHorariosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: HorarioDisponivelWhereInput
+  }
+
+  /**
+   * BarbeiroCountOutputType without action
+   */
+  export type BarbeiroCountOutputTypeCountAgendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgendamentoWhereInput
+  }
+
+
+  /**
+   * Count Type ServicoCountOutputType
+   */
+
+  export type ServicoCountOutputType = {
+    agendamentos: number
+  }
+
+  export type ServicoCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    agendamentos?: boolean | ServicoCountOutputTypeCountAgendamentosArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ServicoCountOutputType without action
+   */
+  export type ServicoCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ServicoCountOutputType
+     */
+    select?: ServicoCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ServicoCountOutputType without action
+   */
+  export type ServicoCountOutputTypeCountAgendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgendamentoWhereInput
   }
 
 
@@ -1737,6 +1900,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     barbearias?: boolean | User$barbeariasArgs<ExtArgs>
+    agendamentos?: boolean | User$agendamentosArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1818,6 +1982,7 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nome" | "email" | "senha" | "telefone" | "tipo" | "plano" | "googleId" | "avatar" | "emailVerified" | "authVersion" | "verificationAttempts" | "verificationCode" | "verificationExpires" | "resetPasswordToken" | "resetPasswordExpires" | "subscriptionId" | "latestPaymentId" | "subscriptionStatus" | "planoExpiraEm" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     barbearias?: boolean | User$barbeariasArgs<ExtArgs>
+    agendamentos?: boolean | User$agendamentosArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1827,6 +1992,7 @@ export namespace Prisma {
     name: "User"
     objects: {
       barbearias: Prisma.$BarbeariaPayload<ExtArgs>[]
+      agendamentos: Prisma.$AgendamentoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2246,6 +2412,7 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     barbearias<T extends User$barbeariasArgs<ExtArgs> = {}>(args?: Subset<T, User$barbeariasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BarbeariaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    agendamentos<T extends User$agendamentosArgs<ExtArgs> = {}>(args?: Subset<T, User$agendamentosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2714,6 +2881,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.agendamentos
+   */
+  export type User$agendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    where?: AgendamentoWhereInput
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    cursor?: AgendamentoWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3061,6 +3252,7 @@ export namespace Prisma {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     barbeiros?: boolean | Barbearia$barbeirosArgs<ExtArgs>
     servicos?: boolean | Barbearia$servicosArgs<ExtArgs>
+    agendamentos?: boolean | Barbearia$agendamentosArgs<ExtArgs>
     _count?: boolean | BarbeariaCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["barbearia"]>
 
@@ -3143,6 +3335,7 @@ export namespace Prisma {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     barbeiros?: boolean | Barbearia$barbeirosArgs<ExtArgs>
     servicos?: boolean | Barbearia$servicosArgs<ExtArgs>
+    agendamentos?: boolean | Barbearia$agendamentosArgs<ExtArgs>
     _count?: boolean | BarbeariaCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BarbeariaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3158,6 +3351,7 @@ export namespace Prisma {
       owner: Prisma.$UserPayload<ExtArgs>
       barbeiros: Prisma.$BarbeiroPayload<ExtArgs>[]
       servicos: Prisma.$ServicoPayload<ExtArgs>[]
+      agendamentos: Prisma.$AgendamentoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3578,6 +3772,7 @@ export namespace Prisma {
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     barbeiros<T extends Barbearia$barbeirosArgs<ExtArgs> = {}>(args?: Subset<T, Barbearia$barbeirosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BarbeiroPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     servicos<T extends Barbearia$servicosArgs<ExtArgs> = {}>(args?: Subset<T, Barbearia$servicosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    agendamentos<T extends Barbearia$agendamentosArgs<ExtArgs> = {}>(args?: Subset<T, Barbearia$agendamentosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4077,6 +4272,30 @@ export namespace Prisma {
   }
 
   /**
+   * Barbearia.agendamentos
+   */
+  export type Barbearia$agendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    where?: AgendamentoWhereInput
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    cursor?: AgendamentoWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
+  }
+
+  /**
    * Barbearia without action
    */
   export type BarbeariaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4278,6 +4497,7 @@ export namespace Prisma {
     barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
     servicos?: boolean | Barbeiro$servicosArgs<ExtArgs>
     horarios?: boolean | Barbeiro$horariosArgs<ExtArgs>
+    agendamentos?: boolean | Barbeiro$agendamentosArgs<ExtArgs>
     _count?: boolean | BarbeiroCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["barbeiro"]>
 
@@ -4318,6 +4538,7 @@ export namespace Prisma {
     barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
     servicos?: boolean | Barbeiro$servicosArgs<ExtArgs>
     horarios?: boolean | Barbeiro$horariosArgs<ExtArgs>
+    agendamentos?: boolean | Barbeiro$agendamentosArgs<ExtArgs>
     _count?: boolean | BarbeiroCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BarbeiroIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4333,6 +4554,7 @@ export namespace Prisma {
       barbearia: Prisma.$BarbeariaPayload<ExtArgs>
       servicos: Prisma.$ServicoPayload<ExtArgs>[]
       horarios: Prisma.$HorarioDisponivelPayload<ExtArgs>[]
+      agendamentos: Prisma.$AgendamentoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4739,6 +4961,7 @@ export namespace Prisma {
     barbearia<T extends BarbeariaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BarbeariaDefaultArgs<ExtArgs>>): Prisma__BarbeariaClient<$Result.GetResult<Prisma.$BarbeariaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     servicos<T extends Barbeiro$servicosArgs<ExtArgs> = {}>(args?: Subset<T, Barbeiro$servicosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     horarios<T extends Barbeiro$horariosArgs<ExtArgs> = {}>(args?: Subset<T, Barbeiro$horariosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HorarioDisponivelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    agendamentos<T extends Barbeiro$agendamentosArgs<ExtArgs> = {}>(args?: Subset<T, Barbeiro$agendamentosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5221,6 +5444,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: HorarioDisponivelScalarFieldEnum | HorarioDisponivelScalarFieldEnum[]
+  }
+
+  /**
+   * Barbeiro.agendamentos
+   */
+  export type Barbeiro$agendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    where?: AgendamentoWhereInput
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    cursor?: AgendamentoWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
   }
 
   /**
@@ -6627,6 +6874,8 @@ export namespace Prisma {
     updatedAt?: boolean
     barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
     barbeiro?: boolean | Servico$barbeiroArgs<ExtArgs>
+    agendamentos?: boolean | Servico$agendamentosArgs<ExtArgs>
+    _count?: boolean | ServicoCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["servico"]>
 
   export type ServicoSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -6673,6 +6922,8 @@ export namespace Prisma {
   export type ServicoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
     barbeiro?: boolean | Servico$barbeiroArgs<ExtArgs>
+    agendamentos?: boolean | Servico$agendamentosArgs<ExtArgs>
+    _count?: boolean | ServicoCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ServicoIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
@@ -6688,6 +6939,7 @@ export namespace Prisma {
     objects: {
       barbearia: Prisma.$BarbeariaPayload<ExtArgs>
       barbeiro: Prisma.$BarbeiroPayload<ExtArgs> | null
+      agendamentos: Prisma.$AgendamentoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7095,6 +7347,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     barbearia<T extends BarbeariaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BarbeariaDefaultArgs<ExtArgs>>): Prisma__BarbeariaClient<$Result.GetResult<Prisma.$BarbeariaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     barbeiro<T extends Servico$barbeiroArgs<ExtArgs> = {}>(args?: Subset<T, Servico$barbeiroArgs<ExtArgs>>): Prisma__BarbeiroClient<$Result.GetResult<Prisma.$BarbeiroPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    agendamentos<T extends Servico$agendamentosArgs<ExtArgs> = {}>(args?: Subset<T, Servico$agendamentosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7553,6 +7806,30 @@ export namespace Prisma {
   }
 
   /**
+   * Servico.agendamentos
+   */
+  export type Servico$agendamentosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    where?: AgendamentoWhereInput
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    cursor?: AgendamentoWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
+  }
+
+  /**
    * Servico without action
    */
   export type ServicoDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7568,6 +7845,1229 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ServicoInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Agendamento
+   */
+
+  export type AggregateAgendamento = {
+    _count: AgendamentoCountAggregateOutputType | null
+    _min: AgendamentoMinAggregateOutputType | null
+    _max: AgendamentoMaxAggregateOutputType | null
+  }
+
+  export type AgendamentoMinAggregateOutputType = {
+    id: string | null
+    data: string | null
+    horario: string | null
+    nomeCliente: string | null
+    telefoneCliente: string | null
+    status: $Enums.StatusAgendamento | null
+    guestTokenHash: string | null
+    lembreteEnviado: boolean | null
+    userId: string | null
+    barbeariaId: string | null
+    barbeiroId: string | null
+    servicoId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AgendamentoMaxAggregateOutputType = {
+    id: string | null
+    data: string | null
+    horario: string | null
+    nomeCliente: string | null
+    telefoneCliente: string | null
+    status: $Enums.StatusAgendamento | null
+    guestTokenHash: string | null
+    lembreteEnviado: boolean | null
+    userId: string | null
+    barbeariaId: string | null
+    barbeiroId: string | null
+    servicoId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AgendamentoCountAggregateOutputType = {
+    id: number
+    data: number
+    horario: number
+    nomeCliente: number
+    telefoneCliente: number
+    status: number
+    guestTokenHash: number
+    lembreteEnviado: number
+    userId: number
+    barbeariaId: number
+    barbeiroId: number
+    servicoId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AgendamentoMinAggregateInputType = {
+    id?: true
+    data?: true
+    horario?: true
+    nomeCliente?: true
+    telefoneCliente?: true
+    status?: true
+    guestTokenHash?: true
+    lembreteEnviado?: true
+    userId?: true
+    barbeariaId?: true
+    barbeiroId?: true
+    servicoId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AgendamentoMaxAggregateInputType = {
+    id?: true
+    data?: true
+    horario?: true
+    nomeCliente?: true
+    telefoneCliente?: true
+    status?: true
+    guestTokenHash?: true
+    lembreteEnviado?: true
+    userId?: true
+    barbeariaId?: true
+    barbeiroId?: true
+    servicoId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AgendamentoCountAggregateInputType = {
+    id?: true
+    data?: true
+    horario?: true
+    nomeCliente?: true
+    telefoneCliente?: true
+    status?: true
+    guestTokenHash?: true
+    lembreteEnviado?: true
+    userId?: true
+    barbeariaId?: true
+    barbeiroId?: true
+    servicoId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AgendamentoAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Agendamento to aggregate.
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Agendamentos to fetch.
+     */
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AgendamentoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Agendamentos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Agendamentos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Agendamentos
+    **/
+    _count?: true | AgendamentoCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AgendamentoMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AgendamentoMaxAggregateInputType
+  }
+
+  export type GetAgendamentoAggregateType<T extends AgendamentoAggregateArgs> = {
+        [P in keyof T & keyof AggregateAgendamento]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAgendamento[P]>
+      : GetScalarType<T[P], AggregateAgendamento[P]>
+  }
+
+
+
+
+  export type AgendamentoGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AgendamentoWhereInput
+    orderBy?: AgendamentoOrderByWithAggregationInput | AgendamentoOrderByWithAggregationInput[]
+    by: AgendamentoScalarFieldEnum[] | AgendamentoScalarFieldEnum
+    having?: AgendamentoScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AgendamentoCountAggregateInputType | true
+    _min?: AgendamentoMinAggregateInputType
+    _max?: AgendamentoMaxAggregateInputType
+  }
+
+  export type AgendamentoGroupByOutputType = {
+    id: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status: $Enums.StatusAgendamento
+    guestTokenHash: string | null
+    lembreteEnviado: boolean
+    userId: string | null
+    barbeariaId: string
+    barbeiroId: string
+    servicoId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: AgendamentoCountAggregateOutputType | null
+    _min: AgendamentoMinAggregateOutputType | null
+    _max: AgendamentoMaxAggregateOutputType | null
+  }
+
+  type GetAgendamentoGroupByPayload<T extends AgendamentoGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AgendamentoGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AgendamentoGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AgendamentoGroupByOutputType[P]>
+            : GetScalarType<T[P], AgendamentoGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AgendamentoSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    data?: boolean
+    horario?: boolean
+    nomeCliente?: boolean
+    telefoneCliente?: boolean
+    status?: boolean
+    guestTokenHash?: boolean
+    lembreteEnviado?: boolean
+    userId?: boolean
+    barbeariaId?: boolean
+    barbeiroId?: boolean
+    servicoId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Agendamento$userArgs<ExtArgs>
+    barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
+    barbeiro?: boolean | BarbeiroDefaultArgs<ExtArgs>
+    servico?: boolean | ServicoDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agendamento"]>
+
+  export type AgendamentoSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    data?: boolean
+    horario?: boolean
+    nomeCliente?: boolean
+    telefoneCliente?: boolean
+    status?: boolean
+    guestTokenHash?: boolean
+    lembreteEnviado?: boolean
+    userId?: boolean
+    barbeariaId?: boolean
+    barbeiroId?: boolean
+    servicoId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Agendamento$userArgs<ExtArgs>
+    barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
+    barbeiro?: boolean | BarbeiroDefaultArgs<ExtArgs>
+    servico?: boolean | ServicoDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agendamento"]>
+
+  export type AgendamentoSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    data?: boolean
+    horario?: boolean
+    nomeCliente?: boolean
+    telefoneCliente?: boolean
+    status?: boolean
+    guestTokenHash?: boolean
+    lembreteEnviado?: boolean
+    userId?: boolean
+    barbeariaId?: boolean
+    barbeiroId?: boolean
+    servicoId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Agendamento$userArgs<ExtArgs>
+    barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
+    barbeiro?: boolean | BarbeiroDefaultArgs<ExtArgs>
+    servico?: boolean | ServicoDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["agendamento"]>
+
+  export type AgendamentoSelectScalar = {
+    id?: boolean
+    data?: boolean
+    horario?: boolean
+    nomeCliente?: boolean
+    telefoneCliente?: boolean
+    status?: boolean
+    guestTokenHash?: boolean
+    lembreteEnviado?: boolean
+    userId?: boolean
+    barbeariaId?: boolean
+    barbeiroId?: boolean
+    servicoId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AgendamentoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "data" | "horario" | "nomeCliente" | "telefoneCliente" | "status" | "guestTokenHash" | "lembreteEnviado" | "userId" | "barbeariaId" | "barbeiroId" | "servicoId" | "createdAt" | "updatedAt", ExtArgs["result"]["agendamento"]>
+  export type AgendamentoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Agendamento$userArgs<ExtArgs>
+    barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
+    barbeiro?: boolean | BarbeiroDefaultArgs<ExtArgs>
+    servico?: boolean | ServicoDefaultArgs<ExtArgs>
+  }
+  export type AgendamentoIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Agendamento$userArgs<ExtArgs>
+    barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
+    barbeiro?: boolean | BarbeiroDefaultArgs<ExtArgs>
+    servico?: boolean | ServicoDefaultArgs<ExtArgs>
+  }
+  export type AgendamentoIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Agendamento$userArgs<ExtArgs>
+    barbearia?: boolean | BarbeariaDefaultArgs<ExtArgs>
+    barbeiro?: boolean | BarbeiroDefaultArgs<ExtArgs>
+    servico?: boolean | ServicoDefaultArgs<ExtArgs>
+  }
+
+  export type $AgendamentoPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Agendamento"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+      barbearia: Prisma.$BarbeariaPayload<ExtArgs>
+      barbeiro: Prisma.$BarbeiroPayload<ExtArgs>
+      servico: Prisma.$ServicoPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      data: string
+      horario: string
+      nomeCliente: string
+      telefoneCliente: string
+      status: $Enums.StatusAgendamento
+      guestTokenHash: string | null
+      lembreteEnviado: boolean
+      userId: string | null
+      barbeariaId: string
+      barbeiroId: string
+      servicoId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["agendamento"]>
+    composites: {}
+  }
+
+  type AgendamentoGetPayload<S extends boolean | null | undefined | AgendamentoDefaultArgs> = $Result.GetResult<Prisma.$AgendamentoPayload, S>
+
+  type AgendamentoCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AgendamentoFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AgendamentoCountAggregateInputType | true
+    }
+
+  export interface AgendamentoDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Agendamento'], meta: { name: 'Agendamento' } }
+    /**
+     * Find zero or one Agendamento that matches the filter.
+     * @param {AgendamentoFindUniqueArgs} args - Arguments to find a Agendamento
+     * @example
+     * // Get one Agendamento
+     * const agendamento = await prisma.agendamento.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AgendamentoFindUniqueArgs>(args: SelectSubset<T, AgendamentoFindUniqueArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Agendamento that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AgendamentoFindUniqueOrThrowArgs} args - Arguments to find a Agendamento
+     * @example
+     * // Get one Agendamento
+     * const agendamento = await prisma.agendamento.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AgendamentoFindUniqueOrThrowArgs>(args: SelectSubset<T, AgendamentoFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Agendamento that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoFindFirstArgs} args - Arguments to find a Agendamento
+     * @example
+     * // Get one Agendamento
+     * const agendamento = await prisma.agendamento.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AgendamentoFindFirstArgs>(args?: SelectSubset<T, AgendamentoFindFirstArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Agendamento that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoFindFirstOrThrowArgs} args - Arguments to find a Agendamento
+     * @example
+     * // Get one Agendamento
+     * const agendamento = await prisma.agendamento.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AgendamentoFindFirstOrThrowArgs>(args?: SelectSubset<T, AgendamentoFindFirstOrThrowArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Agendamentos that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Agendamentos
+     * const agendamentos = await prisma.agendamento.findMany()
+     * 
+     * // Get first 10 Agendamentos
+     * const agendamentos = await prisma.agendamento.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const agendamentoWithIdOnly = await prisma.agendamento.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AgendamentoFindManyArgs>(args?: SelectSubset<T, AgendamentoFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Agendamento.
+     * @param {AgendamentoCreateArgs} args - Arguments to create a Agendamento.
+     * @example
+     * // Create one Agendamento
+     * const Agendamento = await prisma.agendamento.create({
+     *   data: {
+     *     // ... data to create a Agendamento
+     *   }
+     * })
+     * 
+     */
+    create<T extends AgendamentoCreateArgs>(args: SelectSubset<T, AgendamentoCreateArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Agendamentos.
+     * @param {AgendamentoCreateManyArgs} args - Arguments to create many Agendamentos.
+     * @example
+     * // Create many Agendamentos
+     * const agendamento = await prisma.agendamento.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AgendamentoCreateManyArgs>(args?: SelectSubset<T, AgendamentoCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Agendamentos and returns the data saved in the database.
+     * @param {AgendamentoCreateManyAndReturnArgs} args - Arguments to create many Agendamentos.
+     * @example
+     * // Create many Agendamentos
+     * const agendamento = await prisma.agendamento.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Agendamentos and only return the `id`
+     * const agendamentoWithIdOnly = await prisma.agendamento.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AgendamentoCreateManyAndReturnArgs>(args?: SelectSubset<T, AgendamentoCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Agendamento.
+     * @param {AgendamentoDeleteArgs} args - Arguments to delete one Agendamento.
+     * @example
+     * // Delete one Agendamento
+     * const Agendamento = await prisma.agendamento.delete({
+     *   where: {
+     *     // ... filter to delete one Agendamento
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AgendamentoDeleteArgs>(args: SelectSubset<T, AgendamentoDeleteArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Agendamento.
+     * @param {AgendamentoUpdateArgs} args - Arguments to update one Agendamento.
+     * @example
+     * // Update one Agendamento
+     * const agendamento = await prisma.agendamento.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AgendamentoUpdateArgs>(args: SelectSubset<T, AgendamentoUpdateArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Agendamentos.
+     * @param {AgendamentoDeleteManyArgs} args - Arguments to filter Agendamentos to delete.
+     * @example
+     * // Delete a few Agendamentos
+     * const { count } = await prisma.agendamento.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AgendamentoDeleteManyArgs>(args?: SelectSubset<T, AgendamentoDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Agendamentos.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Agendamentos
+     * const agendamento = await prisma.agendamento.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AgendamentoUpdateManyArgs>(args: SelectSubset<T, AgendamentoUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Agendamentos and returns the data updated in the database.
+     * @param {AgendamentoUpdateManyAndReturnArgs} args - Arguments to update many Agendamentos.
+     * @example
+     * // Update many Agendamentos
+     * const agendamento = await prisma.agendamento.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Agendamentos and only return the `id`
+     * const agendamentoWithIdOnly = await prisma.agendamento.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AgendamentoUpdateManyAndReturnArgs>(args: SelectSubset<T, AgendamentoUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Agendamento.
+     * @param {AgendamentoUpsertArgs} args - Arguments to update or create a Agendamento.
+     * @example
+     * // Update or create a Agendamento
+     * const agendamento = await prisma.agendamento.upsert({
+     *   create: {
+     *     // ... data to create a Agendamento
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Agendamento we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AgendamentoUpsertArgs>(args: SelectSubset<T, AgendamentoUpsertArgs<ExtArgs>>): Prisma__AgendamentoClient<$Result.GetResult<Prisma.$AgendamentoPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Agendamentos.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoCountArgs} args - Arguments to filter Agendamentos to count.
+     * @example
+     * // Count the number of Agendamentos
+     * const count = await prisma.agendamento.count({
+     *   where: {
+     *     // ... the filter for the Agendamentos we want to count
+     *   }
+     * })
+    **/
+    count<T extends AgendamentoCountArgs>(
+      args?: Subset<T, AgendamentoCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AgendamentoCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Agendamento.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AgendamentoAggregateArgs>(args: Subset<T, AgendamentoAggregateArgs>): Prisma.PrismaPromise<GetAgendamentoAggregateType<T>>
+
+    /**
+     * Group by Agendamento.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AgendamentoGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AgendamentoGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AgendamentoGroupByArgs['orderBy'] }
+        : { orderBy?: AgendamentoGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AgendamentoGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAgendamentoGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Agendamento model
+   */
+  readonly fields: AgendamentoFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Agendamento.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AgendamentoClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends Agendamento$userArgs<ExtArgs> = {}>(args?: Subset<T, Agendamento$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    barbearia<T extends BarbeariaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BarbeariaDefaultArgs<ExtArgs>>): Prisma__BarbeariaClient<$Result.GetResult<Prisma.$BarbeariaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    barbeiro<T extends BarbeiroDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BarbeiroDefaultArgs<ExtArgs>>): Prisma__BarbeiroClient<$Result.GetResult<Prisma.$BarbeiroPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    servico<T extends ServicoDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServicoDefaultArgs<ExtArgs>>): Prisma__ServicoClient<$Result.GetResult<Prisma.$ServicoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Agendamento model
+   */
+  interface AgendamentoFieldRefs {
+    readonly id: FieldRef<"Agendamento", 'String'>
+    readonly data: FieldRef<"Agendamento", 'String'>
+    readonly horario: FieldRef<"Agendamento", 'String'>
+    readonly nomeCliente: FieldRef<"Agendamento", 'String'>
+    readonly telefoneCliente: FieldRef<"Agendamento", 'String'>
+    readonly status: FieldRef<"Agendamento", 'StatusAgendamento'>
+    readonly guestTokenHash: FieldRef<"Agendamento", 'String'>
+    readonly lembreteEnviado: FieldRef<"Agendamento", 'Boolean'>
+    readonly userId: FieldRef<"Agendamento", 'String'>
+    readonly barbeariaId: FieldRef<"Agendamento", 'String'>
+    readonly barbeiroId: FieldRef<"Agendamento", 'String'>
+    readonly servicoId: FieldRef<"Agendamento", 'String'>
+    readonly createdAt: FieldRef<"Agendamento", 'DateTime'>
+    readonly updatedAt: FieldRef<"Agendamento", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Agendamento findUnique
+   */
+  export type AgendamentoFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * Filter, which Agendamento to fetch.
+     */
+    where: AgendamentoWhereUniqueInput
+  }
+
+  /**
+   * Agendamento findUniqueOrThrow
+   */
+  export type AgendamentoFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * Filter, which Agendamento to fetch.
+     */
+    where: AgendamentoWhereUniqueInput
+  }
+
+  /**
+   * Agendamento findFirst
+   */
+  export type AgendamentoFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * Filter, which Agendamento to fetch.
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Agendamentos to fetch.
+     */
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Agendamentos.
+     */
+    cursor?: AgendamentoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Agendamentos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Agendamentos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Agendamentos.
+     */
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
+  }
+
+  /**
+   * Agendamento findFirstOrThrow
+   */
+  export type AgendamentoFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * Filter, which Agendamento to fetch.
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Agendamentos to fetch.
+     */
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Agendamentos.
+     */
+    cursor?: AgendamentoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Agendamentos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Agendamentos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Agendamentos.
+     */
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
+  }
+
+  /**
+   * Agendamento findMany
+   */
+  export type AgendamentoFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * Filter, which Agendamentos to fetch.
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Agendamentos to fetch.
+     */
+    orderBy?: AgendamentoOrderByWithRelationInput | AgendamentoOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Agendamentos.
+     */
+    cursor?: AgendamentoWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Agendamentos from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Agendamentos.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Agendamentos.
+     */
+    distinct?: AgendamentoScalarFieldEnum | AgendamentoScalarFieldEnum[]
+  }
+
+  /**
+   * Agendamento create
+   */
+  export type AgendamentoCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Agendamento.
+     */
+    data: XOR<AgendamentoCreateInput, AgendamentoUncheckedCreateInput>
+  }
+
+  /**
+   * Agendamento createMany
+   */
+  export type AgendamentoCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Agendamentos.
+     */
+    data: AgendamentoCreateManyInput | AgendamentoCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Agendamento createManyAndReturn
+   */
+  export type AgendamentoCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * The data used to create many Agendamentos.
+     */
+    data: AgendamentoCreateManyInput | AgendamentoCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Agendamento update
+   */
+  export type AgendamentoUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Agendamento.
+     */
+    data: XOR<AgendamentoUpdateInput, AgendamentoUncheckedUpdateInput>
+    /**
+     * Choose, which Agendamento to update.
+     */
+    where: AgendamentoWhereUniqueInput
+  }
+
+  /**
+   * Agendamento updateMany
+   */
+  export type AgendamentoUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Agendamentos.
+     */
+    data: XOR<AgendamentoUpdateManyMutationInput, AgendamentoUncheckedUpdateManyInput>
+    /**
+     * Filter which Agendamentos to update
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * Limit how many Agendamentos to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Agendamento updateManyAndReturn
+   */
+  export type AgendamentoUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * The data used to update Agendamentos.
+     */
+    data: XOR<AgendamentoUpdateManyMutationInput, AgendamentoUncheckedUpdateManyInput>
+    /**
+     * Filter which Agendamentos to update
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * Limit how many Agendamentos to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Agendamento upsert
+   */
+  export type AgendamentoUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Agendamento to update in case it exists.
+     */
+    where: AgendamentoWhereUniqueInput
+    /**
+     * In case the Agendamento found by the `where` argument doesn't exist, create a new Agendamento with this data.
+     */
+    create: XOR<AgendamentoCreateInput, AgendamentoUncheckedCreateInput>
+    /**
+     * In case the Agendamento was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AgendamentoUpdateInput, AgendamentoUncheckedUpdateInput>
+  }
+
+  /**
+   * Agendamento delete
+   */
+  export type AgendamentoDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
+    /**
+     * Filter which Agendamento to delete.
+     */
+    where: AgendamentoWhereUniqueInput
+  }
+
+  /**
+   * Agendamento deleteMany
+   */
+  export type AgendamentoDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Agendamentos to delete
+     */
+    where?: AgendamentoWhereInput
+    /**
+     * Limit how many Agendamentos to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Agendamento.user
+   */
+  export type Agendamento$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Agendamento without action
+   */
+  export type AgendamentoDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Agendamento
+     */
+    select?: AgendamentoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Agendamento
+     */
+    omit?: AgendamentoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AgendamentoInclude<ExtArgs> | null
   }
 
 
@@ -7681,6 +9181,26 @@ export namespace Prisma {
   };
 
   export type ServicoScalarFieldEnum = (typeof ServicoScalarFieldEnum)[keyof typeof ServicoScalarFieldEnum]
+
+
+  export const AgendamentoScalarFieldEnum: {
+    id: 'id',
+    data: 'data',
+    horario: 'horario',
+    nomeCliente: 'nomeCliente',
+    telefoneCliente: 'telefoneCliente',
+    status: 'status',
+    guestTokenHash: 'guestTokenHash',
+    lembreteEnviado: 'lembreteEnviado',
+    userId: 'userId',
+    barbeariaId: 'barbeariaId',
+    barbeiroId: 'barbeiroId',
+    servicoId: 'servicoId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AgendamentoScalarFieldEnum = (typeof AgendamentoScalarFieldEnum)[keyof typeof AgendamentoScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -7801,6 +9321,20 @@ export namespace Prisma {
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
+
+
+  /**
+   * Reference to a field of type 'StatusAgendamento'
+   */
+  export type EnumStatusAgendamentoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatusAgendamento'>
+    
+
+
+  /**
+   * Reference to a field of type 'StatusAgendamento[]'
+   */
+  export type ListEnumStatusAgendamentoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatusAgendamento[]'>
+    
   /**
    * Deep Input Types
    */
@@ -7833,6 +9367,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     barbearias?: BarbeariaListRelationFilter
+    agendamentos?: AgendamentoListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -7859,6 +9394,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     barbearias?: BarbeariaOrderByRelationAggregateInput
+    agendamentos?: AgendamentoOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -7888,6 +9424,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     barbearias?: BarbeariaListRelationFilter
+    agendamentos?: AgendamentoListRelationFilter
   }, "id" | "email" | "googleId" | "subscriptionId">
 
   export type UserOrderByWithAggregationInput = {
@@ -7976,6 +9513,7 @@ export namespace Prisma {
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     barbeiros?: BarbeiroListRelationFilter
     servicos?: ServicoListRelationFilter
+    agendamentos?: AgendamentoListRelationFilter
   }
 
   export type BarbeariaOrderByWithRelationInput = {
@@ -8003,6 +9541,7 @@ export namespace Prisma {
     owner?: UserOrderByWithRelationInput
     barbeiros?: BarbeiroOrderByRelationAggregateInput
     servicos?: ServicoOrderByRelationAggregateInput
+    agendamentos?: AgendamentoOrderByRelationAggregateInput
   }
 
   export type BarbeariaWhereUniqueInput = Prisma.AtLeast<{
@@ -8033,6 +9572,7 @@ export namespace Prisma {
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     barbeiros?: BarbeiroListRelationFilter
     servicos?: ServicoListRelationFilter
+    agendamentos?: AgendamentoListRelationFilter
   }, "id" | "slug">
 
   export type BarbeariaOrderByWithAggregationInput = {
@@ -8105,6 +9645,7 @@ export namespace Prisma {
     barbearia?: XOR<BarbeariaScalarRelationFilter, BarbeariaWhereInput>
     servicos?: ServicoListRelationFilter
     horarios?: HorarioDisponivelListRelationFilter
+    agendamentos?: AgendamentoListRelationFilter
   }
 
   export type BarbeiroOrderByWithRelationInput = {
@@ -8118,6 +9659,7 @@ export namespace Prisma {
     barbearia?: BarbeariaOrderByWithRelationInput
     servicos?: ServicoOrderByRelationAggregateInput
     horarios?: HorarioDisponivelOrderByRelationAggregateInput
+    agendamentos?: AgendamentoOrderByRelationAggregateInput
   }
 
   export type BarbeiroWhereUniqueInput = Prisma.AtLeast<{
@@ -8134,6 +9676,7 @@ export namespace Prisma {
     barbearia?: XOR<BarbeariaScalarRelationFilter, BarbeariaWhereInput>
     servicos?: ServicoListRelationFilter
     horarios?: HorarioDisponivelListRelationFilter
+    agendamentos?: AgendamentoListRelationFilter
   }, "id">
 
   export type BarbeiroOrderByWithAggregationInput = {
@@ -8254,6 +9797,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Servico"> | Date | string
     barbearia?: XOR<BarbeariaScalarRelationFilter, BarbeariaWhereInput>
     barbeiro?: XOR<BarbeiroNullableScalarRelationFilter, BarbeiroWhereInput> | null
+    agendamentos?: AgendamentoListRelationFilter
   }
 
   export type ServicoOrderByWithRelationInput = {
@@ -8268,6 +9812,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     barbearia?: BarbeariaOrderByWithRelationInput
     barbeiro?: BarbeiroOrderByWithRelationInput
+    agendamentos?: AgendamentoOrderByRelationAggregateInput
   }
 
   export type ServicoWhereUniqueInput = Prisma.AtLeast<{
@@ -8285,6 +9830,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Servico"> | Date | string
     barbearia?: XOR<BarbeariaScalarRelationFilter, BarbeariaWhereInput>
     barbeiro?: XOR<BarbeiroNullableScalarRelationFilter, BarbeiroWhereInput> | null
+    agendamentos?: AgendamentoListRelationFilter
   }, "id">
 
   export type ServicoOrderByWithAggregationInput = {
@@ -8319,6 +9865,115 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Servico"> | Date | string
   }
 
+  export type AgendamentoWhereInput = {
+    AND?: AgendamentoWhereInput | AgendamentoWhereInput[]
+    OR?: AgendamentoWhereInput[]
+    NOT?: AgendamentoWhereInput | AgendamentoWhereInput[]
+    id?: StringFilter<"Agendamento"> | string
+    data?: StringFilter<"Agendamento"> | string
+    horario?: StringFilter<"Agendamento"> | string
+    nomeCliente?: StringFilter<"Agendamento"> | string
+    telefoneCliente?: StringFilter<"Agendamento"> | string
+    status?: EnumStatusAgendamentoFilter<"Agendamento"> | $Enums.StatusAgendamento
+    guestTokenHash?: StringNullableFilter<"Agendamento"> | string | null
+    lembreteEnviado?: BoolFilter<"Agendamento"> | boolean
+    userId?: StringNullableFilter<"Agendamento"> | string | null
+    barbeariaId?: StringFilter<"Agendamento"> | string
+    barbeiroId?: StringFilter<"Agendamento"> | string
+    servicoId?: StringFilter<"Agendamento"> | string
+    createdAt?: DateTimeFilter<"Agendamento"> | Date | string
+    updatedAt?: DateTimeFilter<"Agendamento"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    barbearia?: XOR<BarbeariaScalarRelationFilter, BarbeariaWhereInput>
+    barbeiro?: XOR<BarbeiroScalarRelationFilter, BarbeiroWhereInput>
+    servico?: XOR<ServicoScalarRelationFilter, ServicoWhereInput>
+  }
+
+  export type AgendamentoOrderByWithRelationInput = {
+    id?: SortOrder
+    data?: SortOrder
+    horario?: SortOrder
+    nomeCliente?: SortOrder
+    telefoneCliente?: SortOrder
+    status?: SortOrder
+    guestTokenHash?: SortOrderInput | SortOrder
+    lembreteEnviado?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    barbeariaId?: SortOrder
+    barbeiroId?: SortOrder
+    servicoId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    barbearia?: BarbeariaOrderByWithRelationInput
+    barbeiro?: BarbeiroOrderByWithRelationInput
+    servico?: ServicoOrderByWithRelationInput
+  }
+
+  export type AgendamentoWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AgendamentoWhereInput | AgendamentoWhereInput[]
+    OR?: AgendamentoWhereInput[]
+    NOT?: AgendamentoWhereInput | AgendamentoWhereInput[]
+    data?: StringFilter<"Agendamento"> | string
+    horario?: StringFilter<"Agendamento"> | string
+    nomeCliente?: StringFilter<"Agendamento"> | string
+    telefoneCliente?: StringFilter<"Agendamento"> | string
+    status?: EnumStatusAgendamentoFilter<"Agendamento"> | $Enums.StatusAgendamento
+    guestTokenHash?: StringNullableFilter<"Agendamento"> | string | null
+    lembreteEnviado?: BoolFilter<"Agendamento"> | boolean
+    userId?: StringNullableFilter<"Agendamento"> | string | null
+    barbeariaId?: StringFilter<"Agendamento"> | string
+    barbeiroId?: StringFilter<"Agendamento"> | string
+    servicoId?: StringFilter<"Agendamento"> | string
+    createdAt?: DateTimeFilter<"Agendamento"> | Date | string
+    updatedAt?: DateTimeFilter<"Agendamento"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    barbearia?: XOR<BarbeariaScalarRelationFilter, BarbeariaWhereInput>
+    barbeiro?: XOR<BarbeiroScalarRelationFilter, BarbeiroWhereInput>
+    servico?: XOR<ServicoScalarRelationFilter, ServicoWhereInput>
+  }, "id">
+
+  export type AgendamentoOrderByWithAggregationInput = {
+    id?: SortOrder
+    data?: SortOrder
+    horario?: SortOrder
+    nomeCliente?: SortOrder
+    telefoneCliente?: SortOrder
+    status?: SortOrder
+    guestTokenHash?: SortOrderInput | SortOrder
+    lembreteEnviado?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    barbeariaId?: SortOrder
+    barbeiroId?: SortOrder
+    servicoId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AgendamentoCountOrderByAggregateInput
+    _max?: AgendamentoMaxOrderByAggregateInput
+    _min?: AgendamentoMinOrderByAggregateInput
+  }
+
+  export type AgendamentoScalarWhereWithAggregatesInput = {
+    AND?: AgendamentoScalarWhereWithAggregatesInput | AgendamentoScalarWhereWithAggregatesInput[]
+    OR?: AgendamentoScalarWhereWithAggregatesInput[]
+    NOT?: AgendamentoScalarWhereWithAggregatesInput | AgendamentoScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Agendamento"> | string
+    data?: StringWithAggregatesFilter<"Agendamento"> | string
+    horario?: StringWithAggregatesFilter<"Agendamento"> | string
+    nomeCliente?: StringWithAggregatesFilter<"Agendamento"> | string
+    telefoneCliente?: StringWithAggregatesFilter<"Agendamento"> | string
+    status?: EnumStatusAgendamentoWithAggregatesFilter<"Agendamento"> | $Enums.StatusAgendamento
+    guestTokenHash?: StringNullableWithAggregatesFilter<"Agendamento"> | string | null
+    lembreteEnviado?: BoolWithAggregatesFilter<"Agendamento"> | boolean
+    userId?: StringNullableWithAggregatesFilter<"Agendamento"> | string | null
+    barbeariaId?: StringWithAggregatesFilter<"Agendamento"> | string
+    barbeiroId?: StringWithAggregatesFilter<"Agendamento"> | string
+    servicoId?: StringWithAggregatesFilter<"Agendamento"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Agendamento"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Agendamento"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     nome: string
@@ -8343,6 +9998,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     barbearias?: BarbeariaCreateNestedManyWithoutOwnerInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -8369,6 +10025,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     barbearias?: BarbeariaUncheckedCreateNestedManyWithoutOwnerInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -8395,6 +10052,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbearias?: BarbeariaUpdateManyWithoutOwnerNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -8421,6 +10079,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbearias?: BarbeariaUncheckedUpdateManyWithoutOwnerNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -8522,6 +10181,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutBarbeariasInput
     barbeiros?: BarbeiroCreateNestedManyWithoutBarbeariaInput
     servicos?: ServicoCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaUncheckedCreateInput = {
@@ -8548,6 +10208,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     barbeiros?: BarbeiroUncheckedCreateNestedManyWithoutBarbeariaInput
     servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaUpdateInput = {
@@ -8574,6 +10235,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutBarbeariasNestedInput
     barbeiros?: BarbeiroUpdateManyWithoutBarbeariaNestedInput
     servicos?: ServicoUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeariaUncheckedUpdateInput = {
@@ -8600,6 +10262,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbeiros?: BarbeiroUncheckedUpdateManyWithoutBarbeariaNestedInput
     servicos?: ServicoUncheckedUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeariaCreateManyInput = {
@@ -8683,6 +10346,7 @@ export namespace Prisma {
     barbearia: BarbeariaCreateNestedOneWithoutBarbeirosInput
     servicos?: ServicoCreateNestedManyWithoutBarbeiroInput
     horarios?: HorarioDisponivelCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroUncheckedCreateInput = {
@@ -8695,6 +10359,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeiroInput
     horarios?: HorarioDisponivelUncheckedCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroUpdateInput = {
@@ -8707,6 +10372,7 @@ export namespace Prisma {
     barbearia?: BarbeariaUpdateOneRequiredWithoutBarbeirosNestedInput
     servicos?: ServicoUpdateManyWithoutBarbeiroNestedInput
     horarios?: HorarioDisponivelUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeiroUncheckedUpdateInput = {
@@ -8719,6 +10385,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     servicos?: ServicoUncheckedUpdateManyWithoutBarbeiroNestedInput
     horarios?: HorarioDisponivelUncheckedUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeiroCreateManyInput = {
@@ -8843,6 +10510,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     barbearia: BarbeariaCreateNestedOneWithoutServicosInput
     barbeiro?: BarbeiroCreateNestedOneWithoutServicosInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutServicoInput
   }
 
   export type ServicoUncheckedCreateInput = {
@@ -8855,6 +10523,7 @@ export namespace Prisma {
     ativo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutServicoInput
   }
 
   export type ServicoUpdateInput = {
@@ -8867,6 +10536,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbearia?: BarbeariaUpdateOneRequiredWithoutServicosNestedInput
     barbeiro?: BarbeiroUpdateOneWithoutServicosNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutServicoNestedInput
   }
 
   export type ServicoUncheckedUpdateInput = {
@@ -8879,6 +10549,7 @@ export namespace Prisma {
     ativo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutServicoNestedInput
   }
 
   export type ServicoCreateManyInput = {
@@ -8911,6 +10582,121 @@ export namespace Prisma {
     barbeariaId?: StringFieldUpdateOperationsInput | string
     barbeiroId?: NullableStringFieldUpdateOperationsInput | string | null
     ativo?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoCreateInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutAgendamentosInput
+    barbearia: BarbeariaCreateNestedOneWithoutAgendamentosInput
+    barbeiro: BarbeiroCreateNestedOneWithoutAgendamentosInput
+    servico: ServicoCreateNestedOneWithoutAgendamentosInput
+  }
+
+  export type AgendamentoUncheckedCreateInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeariaId: string
+    barbeiroId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutAgendamentosNestedInput
+    barbearia?: BarbeariaUpdateOneRequiredWithoutAgendamentosNestedInput
+    barbeiro?: BarbeiroUpdateOneRequiredWithoutAgendamentosNestedInput
+    servico?: ServicoUpdateOneRequiredWithoutAgendamentosNestedInput
+  }
+
+  export type AgendamentoUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoCreateManyInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeariaId: string
+    barbeiroId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9003,12 +10789,22 @@ export namespace Prisma {
     none?: BarbeariaWhereInput
   }
 
+  export type AgendamentoListRelationFilter = {
+    every?: AgendamentoWhereInput
+    some?: AgendamentoWhereInput
+    none?: AgendamentoWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
   export type BarbeariaOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AgendamentoOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9517,6 +11313,84 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type EnumStatusAgendamentoFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusAgendamento | EnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    not?: NestedEnumStatusAgendamentoFilter<$PrismaModel> | $Enums.StatusAgendamento
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type ServicoScalarRelationFilter = {
+    is?: ServicoWhereInput
+    isNot?: ServicoWhereInput
+  }
+
+  export type AgendamentoCountOrderByAggregateInput = {
+    id?: SortOrder
+    data?: SortOrder
+    horario?: SortOrder
+    nomeCliente?: SortOrder
+    telefoneCliente?: SortOrder
+    status?: SortOrder
+    guestTokenHash?: SortOrder
+    lembreteEnviado?: SortOrder
+    userId?: SortOrder
+    barbeariaId?: SortOrder
+    barbeiroId?: SortOrder
+    servicoId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AgendamentoMaxOrderByAggregateInput = {
+    id?: SortOrder
+    data?: SortOrder
+    horario?: SortOrder
+    nomeCliente?: SortOrder
+    telefoneCliente?: SortOrder
+    status?: SortOrder
+    guestTokenHash?: SortOrder
+    lembreteEnviado?: SortOrder
+    userId?: SortOrder
+    barbeariaId?: SortOrder
+    barbeiroId?: SortOrder
+    servicoId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AgendamentoMinOrderByAggregateInput = {
+    id?: SortOrder
+    data?: SortOrder
+    horario?: SortOrder
+    nomeCliente?: SortOrder
+    telefoneCliente?: SortOrder
+    status?: SortOrder
+    guestTokenHash?: SortOrder
+    lembreteEnviado?: SortOrder
+    userId?: SortOrder
+    barbeariaId?: SortOrder
+    barbeiroId?: SortOrder
+    servicoId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumStatusAgendamentoWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusAgendamento | EnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    not?: NestedEnumStatusAgendamentoWithAggregatesFilter<$PrismaModel> | $Enums.StatusAgendamento
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStatusAgendamentoFilter<$PrismaModel>
+    _max?: NestedEnumStatusAgendamentoFilter<$PrismaModel>
+  }
+
   export type BarbeariaCreateNestedManyWithoutOwnerInput = {
     create?: XOR<BarbeariaCreateWithoutOwnerInput, BarbeariaUncheckedCreateWithoutOwnerInput> | BarbeariaCreateWithoutOwnerInput[] | BarbeariaUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: BarbeariaCreateOrConnectWithoutOwnerInput | BarbeariaCreateOrConnectWithoutOwnerInput[]
@@ -9524,11 +11398,25 @@ export namespace Prisma {
     connect?: BarbeariaWhereUniqueInput | BarbeariaWhereUniqueInput[]
   }
 
+  export type AgendamentoCreateNestedManyWithoutUserInput = {
+    create?: XOR<AgendamentoCreateWithoutUserInput, AgendamentoUncheckedCreateWithoutUserInput> | AgendamentoCreateWithoutUserInput[] | AgendamentoUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutUserInput | AgendamentoCreateOrConnectWithoutUserInput[]
+    createMany?: AgendamentoCreateManyUserInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+  }
+
   export type BarbeariaUncheckedCreateNestedManyWithoutOwnerInput = {
     create?: XOR<BarbeariaCreateWithoutOwnerInput, BarbeariaUncheckedCreateWithoutOwnerInput> | BarbeariaCreateWithoutOwnerInput[] | BarbeariaUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: BarbeariaCreateOrConnectWithoutOwnerInput | BarbeariaCreateOrConnectWithoutOwnerInput[]
     createMany?: BarbeariaCreateManyOwnerInputEnvelope
     connect?: BarbeariaWhereUniqueInput | BarbeariaWhereUniqueInput[]
+  }
+
+  export type AgendamentoUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AgendamentoCreateWithoutUserInput, AgendamentoUncheckedCreateWithoutUserInput> | AgendamentoCreateWithoutUserInput[] | AgendamentoUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutUserInput | AgendamentoCreateOrConnectWithoutUserInput[]
+    createMany?: AgendamentoCreateManyUserInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -9581,6 +11469,20 @@ export namespace Prisma {
     deleteMany?: BarbeariaScalarWhereInput | BarbeariaScalarWhereInput[]
   }
 
+  export type AgendamentoUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutUserInput, AgendamentoUncheckedCreateWithoutUserInput> | AgendamentoCreateWithoutUserInput[] | AgendamentoUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutUserInput | AgendamentoCreateOrConnectWithoutUserInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutUserInput | AgendamentoUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AgendamentoCreateManyUserInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutUserInput | AgendamentoUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutUserInput | AgendamentoUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
   export type BarbeariaUncheckedUpdateManyWithoutOwnerNestedInput = {
     create?: XOR<BarbeariaCreateWithoutOwnerInput, BarbeariaUncheckedCreateWithoutOwnerInput> | BarbeariaCreateWithoutOwnerInput[] | BarbeariaUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: BarbeariaCreateOrConnectWithoutOwnerInput | BarbeariaCreateOrConnectWithoutOwnerInput[]
@@ -9593,6 +11495,20 @@ export namespace Prisma {
     update?: BarbeariaUpdateWithWhereUniqueWithoutOwnerInput | BarbeariaUpdateWithWhereUniqueWithoutOwnerInput[]
     updateMany?: BarbeariaUpdateManyWithWhereWithoutOwnerInput | BarbeariaUpdateManyWithWhereWithoutOwnerInput[]
     deleteMany?: BarbeariaScalarWhereInput | BarbeariaScalarWhereInput[]
+  }
+
+  export type AgendamentoUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutUserInput, AgendamentoUncheckedCreateWithoutUserInput> | AgendamentoCreateWithoutUserInput[] | AgendamentoUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutUserInput | AgendamentoCreateOrConnectWithoutUserInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutUserInput | AgendamentoUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AgendamentoCreateManyUserInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutUserInput | AgendamentoUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutUserInput | AgendamentoUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
   }
 
   export type BarbeariaCreatefotosInput = {
@@ -9619,6 +11535,13 @@ export namespace Prisma {
     connect?: ServicoWhereUniqueInput | ServicoWhereUniqueInput[]
   }
 
+  export type AgendamentoCreateNestedManyWithoutBarbeariaInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeariaInput, AgendamentoUncheckedCreateWithoutBarbeariaInput> | AgendamentoCreateWithoutBarbeariaInput[] | AgendamentoUncheckedCreateWithoutBarbeariaInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeariaInput | AgendamentoCreateOrConnectWithoutBarbeariaInput[]
+    createMany?: AgendamentoCreateManyBarbeariaInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+  }
+
   export type BarbeiroUncheckedCreateNestedManyWithoutBarbeariaInput = {
     create?: XOR<BarbeiroCreateWithoutBarbeariaInput, BarbeiroUncheckedCreateWithoutBarbeariaInput> | BarbeiroCreateWithoutBarbeariaInput[] | BarbeiroUncheckedCreateWithoutBarbeariaInput[]
     connectOrCreate?: BarbeiroCreateOrConnectWithoutBarbeariaInput | BarbeiroCreateOrConnectWithoutBarbeariaInput[]
@@ -9631,6 +11554,13 @@ export namespace Prisma {
     connectOrCreate?: ServicoCreateOrConnectWithoutBarbeariaInput | ServicoCreateOrConnectWithoutBarbeariaInput[]
     createMany?: ServicoCreateManyBarbeariaInputEnvelope
     connect?: ServicoWhereUniqueInput | ServicoWhereUniqueInput[]
+  }
+
+  export type AgendamentoUncheckedCreateNestedManyWithoutBarbeariaInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeariaInput, AgendamentoUncheckedCreateWithoutBarbeariaInput> | AgendamentoCreateWithoutBarbeariaInput[] | AgendamentoUncheckedCreateWithoutBarbeariaInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeariaInput | AgendamentoCreateOrConnectWithoutBarbeariaInput[]
+    createMany?: AgendamentoCreateManyBarbeariaInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
   }
 
   export type NullableFloatFieldUpdateOperationsInput = {
@@ -9682,6 +11612,20 @@ export namespace Prisma {
     deleteMany?: ServicoScalarWhereInput | ServicoScalarWhereInput[]
   }
 
+  export type AgendamentoUpdateManyWithoutBarbeariaNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeariaInput, AgendamentoUncheckedCreateWithoutBarbeariaInput> | AgendamentoCreateWithoutBarbeariaInput[] | AgendamentoUncheckedCreateWithoutBarbeariaInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeariaInput | AgendamentoCreateOrConnectWithoutBarbeariaInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutBarbeariaInput | AgendamentoUpsertWithWhereUniqueWithoutBarbeariaInput[]
+    createMany?: AgendamentoCreateManyBarbeariaInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutBarbeariaInput | AgendamentoUpdateWithWhereUniqueWithoutBarbeariaInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutBarbeariaInput | AgendamentoUpdateManyWithWhereWithoutBarbeariaInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
   export type BarbeiroUncheckedUpdateManyWithoutBarbeariaNestedInput = {
     create?: XOR<BarbeiroCreateWithoutBarbeariaInput, BarbeiroUncheckedCreateWithoutBarbeariaInput> | BarbeiroCreateWithoutBarbeariaInput[] | BarbeiroUncheckedCreateWithoutBarbeariaInput[]
     connectOrCreate?: BarbeiroCreateOrConnectWithoutBarbeariaInput | BarbeiroCreateOrConnectWithoutBarbeariaInput[]
@@ -9710,6 +11654,20 @@ export namespace Prisma {
     deleteMany?: ServicoScalarWhereInput | ServicoScalarWhereInput[]
   }
 
+  export type AgendamentoUncheckedUpdateManyWithoutBarbeariaNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeariaInput, AgendamentoUncheckedCreateWithoutBarbeariaInput> | AgendamentoCreateWithoutBarbeariaInput[] | AgendamentoUncheckedCreateWithoutBarbeariaInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeariaInput | AgendamentoCreateOrConnectWithoutBarbeariaInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutBarbeariaInput | AgendamentoUpsertWithWhereUniqueWithoutBarbeariaInput[]
+    createMany?: AgendamentoCreateManyBarbeariaInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutBarbeariaInput | AgendamentoUpdateWithWhereUniqueWithoutBarbeariaInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutBarbeariaInput | AgendamentoUpdateManyWithWhereWithoutBarbeariaInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
   export type BarbeariaCreateNestedOneWithoutBarbeirosInput = {
     create?: XOR<BarbeariaCreateWithoutBarbeirosInput, BarbeariaUncheckedCreateWithoutBarbeirosInput>
     connectOrCreate?: BarbeariaCreateOrConnectWithoutBarbeirosInput
@@ -9730,6 +11688,13 @@ export namespace Prisma {
     connect?: HorarioDisponivelWhereUniqueInput | HorarioDisponivelWhereUniqueInput[]
   }
 
+  export type AgendamentoCreateNestedManyWithoutBarbeiroInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeiroInput, AgendamentoUncheckedCreateWithoutBarbeiroInput> | AgendamentoCreateWithoutBarbeiroInput[] | AgendamentoUncheckedCreateWithoutBarbeiroInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeiroInput | AgendamentoCreateOrConnectWithoutBarbeiroInput[]
+    createMany?: AgendamentoCreateManyBarbeiroInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+  }
+
   export type ServicoUncheckedCreateNestedManyWithoutBarbeiroInput = {
     create?: XOR<ServicoCreateWithoutBarbeiroInput, ServicoUncheckedCreateWithoutBarbeiroInput> | ServicoCreateWithoutBarbeiroInput[] | ServicoUncheckedCreateWithoutBarbeiroInput[]
     connectOrCreate?: ServicoCreateOrConnectWithoutBarbeiroInput | ServicoCreateOrConnectWithoutBarbeiroInput[]
@@ -9742,6 +11707,13 @@ export namespace Prisma {
     connectOrCreate?: HorarioDisponivelCreateOrConnectWithoutBarbeiroInput | HorarioDisponivelCreateOrConnectWithoutBarbeiroInput[]
     createMany?: HorarioDisponivelCreateManyBarbeiroInputEnvelope
     connect?: HorarioDisponivelWhereUniqueInput | HorarioDisponivelWhereUniqueInput[]
+  }
+
+  export type AgendamentoUncheckedCreateNestedManyWithoutBarbeiroInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeiroInput, AgendamentoUncheckedCreateWithoutBarbeiroInput> | AgendamentoCreateWithoutBarbeiroInput[] | AgendamentoUncheckedCreateWithoutBarbeiroInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeiroInput | AgendamentoCreateOrConnectWithoutBarbeiroInput[]
+    createMany?: AgendamentoCreateManyBarbeiroInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
   }
 
   export type BarbeariaUpdateOneRequiredWithoutBarbeirosNestedInput = {
@@ -9780,6 +11752,20 @@ export namespace Prisma {
     deleteMany?: HorarioDisponivelScalarWhereInput | HorarioDisponivelScalarWhereInput[]
   }
 
+  export type AgendamentoUpdateManyWithoutBarbeiroNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeiroInput, AgendamentoUncheckedCreateWithoutBarbeiroInput> | AgendamentoCreateWithoutBarbeiroInput[] | AgendamentoUncheckedCreateWithoutBarbeiroInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeiroInput | AgendamentoCreateOrConnectWithoutBarbeiroInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutBarbeiroInput | AgendamentoUpsertWithWhereUniqueWithoutBarbeiroInput[]
+    createMany?: AgendamentoCreateManyBarbeiroInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutBarbeiroInput | AgendamentoUpdateWithWhereUniqueWithoutBarbeiroInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutBarbeiroInput | AgendamentoUpdateManyWithWhereWithoutBarbeiroInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
   export type ServicoUncheckedUpdateManyWithoutBarbeiroNestedInput = {
     create?: XOR<ServicoCreateWithoutBarbeiroInput, ServicoUncheckedCreateWithoutBarbeiroInput> | ServicoCreateWithoutBarbeiroInput[] | ServicoUncheckedCreateWithoutBarbeiroInput[]
     connectOrCreate?: ServicoCreateOrConnectWithoutBarbeiroInput | ServicoCreateOrConnectWithoutBarbeiroInput[]
@@ -9808,6 +11794,20 @@ export namespace Prisma {
     deleteMany?: HorarioDisponivelScalarWhereInput | HorarioDisponivelScalarWhereInput[]
   }
 
+  export type AgendamentoUncheckedUpdateManyWithoutBarbeiroNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutBarbeiroInput, AgendamentoUncheckedCreateWithoutBarbeiroInput> | AgendamentoCreateWithoutBarbeiroInput[] | AgendamentoUncheckedCreateWithoutBarbeiroInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutBarbeiroInput | AgendamentoCreateOrConnectWithoutBarbeiroInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutBarbeiroInput | AgendamentoUpsertWithWhereUniqueWithoutBarbeiroInput[]
+    createMany?: AgendamentoCreateManyBarbeiroInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutBarbeiroInput | AgendamentoUpdateWithWhereUniqueWithoutBarbeiroInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutBarbeiroInput | AgendamentoUpdateManyWithWhereWithoutBarbeiroInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
   export type BarbeiroCreateNestedOneWithoutHorariosInput = {
     create?: XOR<BarbeiroCreateWithoutHorariosInput, BarbeiroUncheckedCreateWithoutHorariosInput>
     connectOrCreate?: BarbeiroCreateOrConnectWithoutHorariosInput
@@ -9834,6 +11834,20 @@ export namespace Prisma {
     connect?: BarbeiroWhereUniqueInput
   }
 
+  export type AgendamentoCreateNestedManyWithoutServicoInput = {
+    create?: XOR<AgendamentoCreateWithoutServicoInput, AgendamentoUncheckedCreateWithoutServicoInput> | AgendamentoCreateWithoutServicoInput[] | AgendamentoUncheckedCreateWithoutServicoInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutServicoInput | AgendamentoCreateOrConnectWithoutServicoInput[]
+    createMany?: AgendamentoCreateManyServicoInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+  }
+
+  export type AgendamentoUncheckedCreateNestedManyWithoutServicoInput = {
+    create?: XOR<AgendamentoCreateWithoutServicoInput, AgendamentoUncheckedCreateWithoutServicoInput> | AgendamentoCreateWithoutServicoInput[] | AgendamentoUncheckedCreateWithoutServicoInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutServicoInput | AgendamentoCreateOrConnectWithoutServicoInput[]
+    createMany?: AgendamentoCreateManyServicoInputEnvelope
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+  }
+
   export type FloatFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -9858,6 +11872,96 @@ export namespace Prisma {
     delete?: BarbeiroWhereInput | boolean
     connect?: BarbeiroWhereUniqueInput
     update?: XOR<XOR<BarbeiroUpdateToOneWithWhereWithoutServicosInput, BarbeiroUpdateWithoutServicosInput>, BarbeiroUncheckedUpdateWithoutServicosInput>
+  }
+
+  export type AgendamentoUpdateManyWithoutServicoNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutServicoInput, AgendamentoUncheckedCreateWithoutServicoInput> | AgendamentoCreateWithoutServicoInput[] | AgendamentoUncheckedCreateWithoutServicoInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutServicoInput | AgendamentoCreateOrConnectWithoutServicoInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutServicoInput | AgendamentoUpsertWithWhereUniqueWithoutServicoInput[]
+    createMany?: AgendamentoCreateManyServicoInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutServicoInput | AgendamentoUpdateWithWhereUniqueWithoutServicoInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutServicoInput | AgendamentoUpdateManyWithWhereWithoutServicoInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
+  export type AgendamentoUncheckedUpdateManyWithoutServicoNestedInput = {
+    create?: XOR<AgendamentoCreateWithoutServicoInput, AgendamentoUncheckedCreateWithoutServicoInput> | AgendamentoCreateWithoutServicoInput[] | AgendamentoUncheckedCreateWithoutServicoInput[]
+    connectOrCreate?: AgendamentoCreateOrConnectWithoutServicoInput | AgendamentoCreateOrConnectWithoutServicoInput[]
+    upsert?: AgendamentoUpsertWithWhereUniqueWithoutServicoInput | AgendamentoUpsertWithWhereUniqueWithoutServicoInput[]
+    createMany?: AgendamentoCreateManyServicoInputEnvelope
+    set?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    disconnect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    delete?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    connect?: AgendamentoWhereUniqueInput | AgendamentoWhereUniqueInput[]
+    update?: AgendamentoUpdateWithWhereUniqueWithoutServicoInput | AgendamentoUpdateWithWhereUniqueWithoutServicoInput[]
+    updateMany?: AgendamentoUpdateManyWithWhereWithoutServicoInput | AgendamentoUpdateManyWithWhereWithoutServicoInput[]
+    deleteMany?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutAgendamentosInput = {
+    create?: XOR<UserCreateWithoutAgendamentosInput, UserUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAgendamentosInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BarbeariaCreateNestedOneWithoutAgendamentosInput = {
+    create?: XOR<BarbeariaCreateWithoutAgendamentosInput, BarbeariaUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: BarbeariaCreateOrConnectWithoutAgendamentosInput
+    connect?: BarbeariaWhereUniqueInput
+  }
+
+  export type BarbeiroCreateNestedOneWithoutAgendamentosInput = {
+    create?: XOR<BarbeiroCreateWithoutAgendamentosInput, BarbeiroUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: BarbeiroCreateOrConnectWithoutAgendamentosInput
+    connect?: BarbeiroWhereUniqueInput
+  }
+
+  export type ServicoCreateNestedOneWithoutAgendamentosInput = {
+    create?: XOR<ServicoCreateWithoutAgendamentosInput, ServicoUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: ServicoCreateOrConnectWithoutAgendamentosInput
+    connect?: ServicoWhereUniqueInput
+  }
+
+  export type EnumStatusAgendamentoFieldUpdateOperationsInput = {
+    set?: $Enums.StatusAgendamento
+  }
+
+  export type UserUpdateOneWithoutAgendamentosNestedInput = {
+    create?: XOR<UserCreateWithoutAgendamentosInput, UserUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAgendamentosInput
+    upsert?: UserUpsertWithoutAgendamentosInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAgendamentosInput, UserUpdateWithoutAgendamentosInput>, UserUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type BarbeariaUpdateOneRequiredWithoutAgendamentosNestedInput = {
+    create?: XOR<BarbeariaCreateWithoutAgendamentosInput, BarbeariaUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: BarbeariaCreateOrConnectWithoutAgendamentosInput
+    upsert?: BarbeariaUpsertWithoutAgendamentosInput
+    connect?: BarbeariaWhereUniqueInput
+    update?: XOR<XOR<BarbeariaUpdateToOneWithWhereWithoutAgendamentosInput, BarbeariaUpdateWithoutAgendamentosInput>, BarbeariaUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type BarbeiroUpdateOneRequiredWithoutAgendamentosNestedInput = {
+    create?: XOR<BarbeiroCreateWithoutAgendamentosInput, BarbeiroUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: BarbeiroCreateOrConnectWithoutAgendamentosInput
+    upsert?: BarbeiroUpsertWithoutAgendamentosInput
+    connect?: BarbeiroWhereUniqueInput
+    update?: XOR<XOR<BarbeiroUpdateToOneWithWhereWithoutAgendamentosInput, BarbeiroUpdateWithoutAgendamentosInput>, BarbeiroUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type ServicoUpdateOneRequiredWithoutAgendamentosNestedInput = {
+    create?: XOR<ServicoCreateWithoutAgendamentosInput, ServicoUncheckedCreateWithoutAgendamentosInput>
+    connectOrCreate?: ServicoCreateOrConnectWithoutAgendamentosInput
+    upsert?: ServicoUpsertWithoutAgendamentosInput
+    connect?: ServicoWhereUniqueInput
+    update?: XOR<XOR<ServicoUpdateToOneWithWhereWithoutAgendamentosInput, ServicoUpdateWithoutAgendamentosInput>, ServicoUncheckedUpdateWithoutAgendamentosInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -10111,6 +12215,23 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedEnumStatusAgendamentoFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusAgendamento | EnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    not?: NestedEnumStatusAgendamentoFilter<$PrismaModel> | $Enums.StatusAgendamento
+  }
+
+  export type NestedEnumStatusAgendamentoWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StatusAgendamento | EnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    in?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StatusAgendamento[] | ListEnumStatusAgendamentoFieldRefInput<$PrismaModel>
+    not?: NestedEnumStatusAgendamentoWithAggregatesFilter<$PrismaModel> | $Enums.StatusAgendamento
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStatusAgendamentoFilter<$PrismaModel>
+    _max?: NestedEnumStatusAgendamentoFilter<$PrismaModel>
+  }
+
   export type BarbeariaCreateWithoutOwnerInput = {
     id?: string
     nome: string
@@ -10134,6 +12255,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     barbeiros?: BarbeiroCreateNestedManyWithoutBarbeariaInput
     servicos?: ServicoCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaUncheckedCreateWithoutOwnerInput = {
@@ -10159,6 +12281,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     barbeiros?: BarbeiroUncheckedCreateNestedManyWithoutBarbeariaInput
     servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaCreateOrConnectWithoutOwnerInput = {
@@ -10168,6 +12291,48 @@ export namespace Prisma {
 
   export type BarbeariaCreateManyOwnerInputEnvelope = {
     data: BarbeariaCreateManyOwnerInput | BarbeariaCreateManyOwnerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AgendamentoCreateWithoutUserInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    barbearia: BarbeariaCreateNestedOneWithoutAgendamentosInput
+    barbeiro: BarbeiroCreateNestedOneWithoutAgendamentosInput
+    servico: ServicoCreateNestedOneWithoutAgendamentosInput
+  }
+
+  export type AgendamentoUncheckedCreateWithoutUserInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    barbeariaId: string
+    barbeiroId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoCreateOrConnectWithoutUserInput = {
+    where: AgendamentoWhereUniqueInput
+    create: XOR<AgendamentoCreateWithoutUserInput, AgendamentoUncheckedCreateWithoutUserInput>
+  }
+
+  export type AgendamentoCreateManyUserInputEnvelope = {
+    data: AgendamentoCreateManyUserInput | AgendamentoCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -10214,6 +12379,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Barbearia"> | Date | string
   }
 
+  export type AgendamentoUpsertWithWhereUniqueWithoutUserInput = {
+    where: AgendamentoWhereUniqueInput
+    update: XOR<AgendamentoUpdateWithoutUserInput, AgendamentoUncheckedUpdateWithoutUserInput>
+    create: XOR<AgendamentoCreateWithoutUserInput, AgendamentoUncheckedCreateWithoutUserInput>
+  }
+
+  export type AgendamentoUpdateWithWhereUniqueWithoutUserInput = {
+    where: AgendamentoWhereUniqueInput
+    data: XOR<AgendamentoUpdateWithoutUserInput, AgendamentoUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AgendamentoUpdateManyWithWhereWithoutUserInput = {
+    where: AgendamentoScalarWhereInput
+    data: XOR<AgendamentoUpdateManyMutationInput, AgendamentoUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AgendamentoScalarWhereInput = {
+    AND?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+    OR?: AgendamentoScalarWhereInput[]
+    NOT?: AgendamentoScalarWhereInput | AgendamentoScalarWhereInput[]
+    id?: StringFilter<"Agendamento"> | string
+    data?: StringFilter<"Agendamento"> | string
+    horario?: StringFilter<"Agendamento"> | string
+    nomeCliente?: StringFilter<"Agendamento"> | string
+    telefoneCliente?: StringFilter<"Agendamento"> | string
+    status?: EnumStatusAgendamentoFilter<"Agendamento"> | $Enums.StatusAgendamento
+    guestTokenHash?: StringNullableFilter<"Agendamento"> | string | null
+    lembreteEnviado?: BoolFilter<"Agendamento"> | boolean
+    userId?: StringNullableFilter<"Agendamento"> | string | null
+    barbeariaId?: StringFilter<"Agendamento"> | string
+    barbeiroId?: StringFilter<"Agendamento"> | string
+    servicoId?: StringFilter<"Agendamento"> | string
+    createdAt?: DateTimeFilter<"Agendamento"> | Date | string
+    updatedAt?: DateTimeFilter<"Agendamento"> | Date | string
+  }
+
   export type UserCreateWithoutBarbeariasInput = {
     id?: string
     nome: string
@@ -10237,6 +12438,7 @@ export namespace Prisma {
     planoExpiraEm?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    agendamentos?: AgendamentoCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBarbeariasInput = {
@@ -10262,6 +12464,7 @@ export namespace Prisma {
     planoExpiraEm?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBarbeariasInput = {
@@ -10278,6 +12481,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     servicos?: ServicoCreateNestedManyWithoutBarbeiroInput
     horarios?: HorarioDisponivelCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroUncheckedCreateWithoutBarbeariaInput = {
@@ -10289,6 +12493,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeiroInput
     horarios?: HorarioDisponivelUncheckedCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroCreateOrConnectWithoutBarbeariaInput = {
@@ -10310,6 +12515,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     barbeiro?: BarbeiroCreateNestedOneWithoutServicosInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutServicoInput
   }
 
   export type ServicoUncheckedCreateWithoutBarbeariaInput = {
@@ -10321,6 +12527,7 @@ export namespace Prisma {
     ativo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutServicoInput
   }
 
   export type ServicoCreateOrConnectWithoutBarbeariaInput = {
@@ -10330,6 +12537,48 @@ export namespace Prisma {
 
   export type ServicoCreateManyBarbeariaInputEnvelope = {
     data: ServicoCreateManyBarbeariaInput | ServicoCreateManyBarbeariaInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AgendamentoCreateWithoutBarbeariaInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutAgendamentosInput
+    barbeiro: BarbeiroCreateNestedOneWithoutAgendamentosInput
+    servico: ServicoCreateNestedOneWithoutAgendamentosInput
+  }
+
+  export type AgendamentoUncheckedCreateWithoutBarbeariaInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeiroId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoCreateOrConnectWithoutBarbeariaInput = {
+    where: AgendamentoWhereUniqueInput
+    create: XOR<AgendamentoCreateWithoutBarbeariaInput, AgendamentoUncheckedCreateWithoutBarbeariaInput>
+  }
+
+  export type AgendamentoCreateManyBarbeariaInputEnvelope = {
+    data: AgendamentoCreateManyBarbeariaInput | AgendamentoCreateManyBarbeariaInput[]
     skipDuplicates?: boolean
   }
 
@@ -10367,6 +12616,7 @@ export namespace Prisma {
     planoExpiraEm?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    agendamentos?: AgendamentoUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBarbeariasInput = {
@@ -10392,6 +12642,7 @@ export namespace Prisma {
     planoExpiraEm?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BarbeiroUpsertWithWhereUniqueWithoutBarbeariaInput = {
@@ -10454,6 +12705,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Servico"> | Date | string
   }
 
+  export type AgendamentoUpsertWithWhereUniqueWithoutBarbeariaInput = {
+    where: AgendamentoWhereUniqueInput
+    update: XOR<AgendamentoUpdateWithoutBarbeariaInput, AgendamentoUncheckedUpdateWithoutBarbeariaInput>
+    create: XOR<AgendamentoCreateWithoutBarbeariaInput, AgendamentoUncheckedCreateWithoutBarbeariaInput>
+  }
+
+  export type AgendamentoUpdateWithWhereUniqueWithoutBarbeariaInput = {
+    where: AgendamentoWhereUniqueInput
+    data: XOR<AgendamentoUpdateWithoutBarbeariaInput, AgendamentoUncheckedUpdateWithoutBarbeariaInput>
+  }
+
+  export type AgendamentoUpdateManyWithWhereWithoutBarbeariaInput = {
+    where: AgendamentoScalarWhereInput
+    data: XOR<AgendamentoUpdateManyMutationInput, AgendamentoUncheckedUpdateManyWithoutBarbeariaInput>
+  }
+
   export type BarbeariaCreateWithoutBarbeirosInput = {
     id?: string
     nome: string
@@ -10477,6 +12744,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBarbeariasInput
     servicos?: ServicoCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaUncheckedCreateWithoutBarbeirosInput = {
@@ -10502,6 +12770,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaCreateOrConnectWithoutBarbeirosInput = {
@@ -10518,6 +12787,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     barbearia: BarbeariaCreateNestedOneWithoutServicosInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutServicoInput
   }
 
   export type ServicoUncheckedCreateWithoutBarbeiroInput = {
@@ -10529,6 +12799,7 @@ export namespace Prisma {
     ativo?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutServicoInput
   }
 
   export type ServicoCreateOrConnectWithoutBarbeiroInput = {
@@ -10573,6 +12844,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AgendamentoCreateWithoutBarbeiroInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutAgendamentosInput
+    barbearia: BarbeariaCreateNestedOneWithoutAgendamentosInput
+    servico: ServicoCreateNestedOneWithoutAgendamentosInput
+  }
+
+  export type AgendamentoUncheckedCreateWithoutBarbeiroInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeariaId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoCreateOrConnectWithoutBarbeiroInput = {
+    where: AgendamentoWhereUniqueInput
+    create: XOR<AgendamentoCreateWithoutBarbeiroInput, AgendamentoUncheckedCreateWithoutBarbeiroInput>
+  }
+
+  export type AgendamentoCreateManyBarbeiroInputEnvelope = {
+    data: AgendamentoCreateManyBarbeiroInput | AgendamentoCreateManyBarbeiroInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BarbeariaUpsertWithoutBarbeirosInput = {
     update: XOR<BarbeariaUpdateWithoutBarbeirosInput, BarbeariaUncheckedUpdateWithoutBarbeirosInput>
     create: XOR<BarbeariaCreateWithoutBarbeirosInput, BarbeariaUncheckedCreateWithoutBarbeirosInput>
@@ -10607,6 +12920,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBarbeariasNestedInput
     servicos?: ServicoUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeariaUncheckedUpdateWithoutBarbeirosInput = {
@@ -10632,6 +12946,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     servicos?: ServicoUncheckedUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type ServicoUpsertWithWhereUniqueWithoutBarbeiroInput = {
@@ -10681,6 +12996,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"HorarioDisponivel"> | Date | string
   }
 
+  export type AgendamentoUpsertWithWhereUniqueWithoutBarbeiroInput = {
+    where: AgendamentoWhereUniqueInput
+    update: XOR<AgendamentoUpdateWithoutBarbeiroInput, AgendamentoUncheckedUpdateWithoutBarbeiroInput>
+    create: XOR<AgendamentoCreateWithoutBarbeiroInput, AgendamentoUncheckedCreateWithoutBarbeiroInput>
+  }
+
+  export type AgendamentoUpdateWithWhereUniqueWithoutBarbeiroInput = {
+    where: AgendamentoWhereUniqueInput
+    data: XOR<AgendamentoUpdateWithoutBarbeiroInput, AgendamentoUncheckedUpdateWithoutBarbeiroInput>
+  }
+
+  export type AgendamentoUpdateManyWithWhereWithoutBarbeiroInput = {
+    where: AgendamentoScalarWhereInput
+    data: XOR<AgendamentoUpdateManyMutationInput, AgendamentoUncheckedUpdateManyWithoutBarbeiroInput>
+  }
+
   export type BarbeiroCreateWithoutHorariosInput = {
     id?: string
     nome: string
@@ -10690,6 +13021,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     barbearia: BarbeariaCreateNestedOneWithoutBarbeirosInput
     servicos?: ServicoCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroUncheckedCreateWithoutHorariosInput = {
@@ -10701,6 +13033,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroCreateOrConnectWithoutHorariosInput = {
@@ -10728,6 +13061,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbearia?: BarbeariaUpdateOneRequiredWithoutBarbeirosNestedInput
     servicos?: ServicoUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeiroUncheckedUpdateWithoutHorariosInput = {
@@ -10739,6 +13073,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     servicos?: ServicoUncheckedUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeariaCreateWithoutServicosInput = {
@@ -10764,6 +13099,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBarbeariasInput
     barbeiros?: BarbeiroCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaUncheckedCreateWithoutServicosInput = {
@@ -10789,6 +13125,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     barbeiros?: BarbeiroUncheckedCreateNestedManyWithoutBarbeariaInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeariaInput
   }
 
   export type BarbeariaCreateOrConnectWithoutServicosInput = {
@@ -10805,6 +13142,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     barbearia: BarbeariaCreateNestedOneWithoutBarbeirosInput
     horarios?: HorarioDisponivelCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroUncheckedCreateWithoutServicosInput = {
@@ -10816,11 +13154,54 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     horarios?: HorarioDisponivelUncheckedCreateNestedManyWithoutBarbeiroInput
+    agendamentos?: AgendamentoUncheckedCreateNestedManyWithoutBarbeiroInput
   }
 
   export type BarbeiroCreateOrConnectWithoutServicosInput = {
     where: BarbeiroWhereUniqueInput
     create: XOR<BarbeiroCreateWithoutServicosInput, BarbeiroUncheckedCreateWithoutServicosInput>
+  }
+
+  export type AgendamentoCreateWithoutServicoInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutAgendamentosInput
+    barbearia: BarbeariaCreateNestedOneWithoutAgendamentosInput
+    barbeiro: BarbeiroCreateNestedOneWithoutAgendamentosInput
+  }
+
+  export type AgendamentoUncheckedCreateWithoutServicoInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeariaId: string
+    barbeiroId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoCreateOrConnectWithoutServicoInput = {
+    where: AgendamentoWhereUniqueInput
+    create: XOR<AgendamentoCreateWithoutServicoInput, AgendamentoUncheckedCreateWithoutServicoInput>
+  }
+
+  export type AgendamentoCreateManyServicoInputEnvelope = {
+    data: AgendamentoCreateManyServicoInput | AgendamentoCreateManyServicoInput[]
+    skipDuplicates?: boolean
   }
 
   export type BarbeariaUpsertWithoutServicosInput = {
@@ -10857,6 +13238,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBarbeariasNestedInput
     barbeiros?: BarbeiroUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeariaUncheckedUpdateWithoutServicosInput = {
@@ -10882,6 +13264,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbeiros?: BarbeiroUncheckedUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeiroUpsertWithoutServicosInput = {
@@ -10904,6 +13287,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbearia?: BarbeariaUpdateOneRequiredWithoutBarbeirosNestedInput
     horarios?: HorarioDisponivelUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeiroUncheckedUpdateWithoutServicosInput = {
@@ -10915,6 +13299,391 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     horarios?: HorarioDisponivelUncheckedUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeiroNestedInput
+  }
+
+  export type AgendamentoUpsertWithWhereUniqueWithoutServicoInput = {
+    where: AgendamentoWhereUniqueInput
+    update: XOR<AgendamentoUpdateWithoutServicoInput, AgendamentoUncheckedUpdateWithoutServicoInput>
+    create: XOR<AgendamentoCreateWithoutServicoInput, AgendamentoUncheckedCreateWithoutServicoInput>
+  }
+
+  export type AgendamentoUpdateWithWhereUniqueWithoutServicoInput = {
+    where: AgendamentoWhereUniqueInput
+    data: XOR<AgendamentoUpdateWithoutServicoInput, AgendamentoUncheckedUpdateWithoutServicoInput>
+  }
+
+  export type AgendamentoUpdateManyWithWhereWithoutServicoInput = {
+    where: AgendamentoScalarWhereInput
+    data: XOR<AgendamentoUpdateManyMutationInput, AgendamentoUncheckedUpdateManyWithoutServicoInput>
+  }
+
+  export type UserCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    email: string
+    senha?: string | null
+    telefone?: string | null
+    tipo?: $Enums.UserType
+    plano?: $Enums.Plano
+    googleId?: string | null
+    avatar?: string | null
+    emailVerified?: boolean
+    authVersion?: number
+    verificationAttempts?: number
+    verificationCode?: string | null
+    verificationExpires?: Date | string | null
+    resetPasswordToken?: string | null
+    resetPasswordExpires?: Date | string | null
+    subscriptionId?: string | null
+    latestPaymentId?: string | null
+    subscriptionStatus?: string | null
+    planoExpiraEm?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    barbearias?: BarbeariaCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    email: string
+    senha?: string | null
+    telefone?: string | null
+    tipo?: $Enums.UserType
+    plano?: $Enums.Plano
+    googleId?: string | null
+    avatar?: string | null
+    emailVerified?: boolean
+    authVersion?: number
+    verificationAttempts?: number
+    verificationCode?: string | null
+    verificationExpires?: Date | string | null
+    resetPasswordToken?: string | null
+    resetPasswordExpires?: Date | string | null
+    subscriptionId?: string | null
+    latestPaymentId?: string | null
+    subscriptionStatus?: string | null
+    planoExpiraEm?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    barbearias?: BarbeariaUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutAgendamentosInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAgendamentosInput, UserUncheckedCreateWithoutAgendamentosInput>
+  }
+
+  export type BarbeariaCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    slug: string
+    descricao?: string | null
+    endereco: string
+    cidade: string
+    estado: string
+    cep?: string | null
+    pontoReferencia?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    telefone?: string | null
+    whatsapp?: string | null
+    mensagemLembrete?: string | null
+    lembreteAtivo?: boolean
+    foto?: string | null
+    fotos?: BarbeariaCreatefotosInput | string[]
+    ativa?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutBarbeariasInput
+    barbeiros?: BarbeiroCreateNestedManyWithoutBarbeariaInput
+    servicos?: ServicoCreateNestedManyWithoutBarbeariaInput
+  }
+
+  export type BarbeariaUncheckedCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    slug: string
+    descricao?: string | null
+    endereco: string
+    cidade: string
+    estado: string
+    cep?: string | null
+    pontoReferencia?: string | null
+    latitude?: number | null
+    longitude?: number | null
+    telefone?: string | null
+    whatsapp?: string | null
+    mensagemLembrete?: string | null
+    lembreteAtivo?: boolean
+    foto?: string | null
+    fotos?: BarbeariaCreatefotosInput | string[]
+    ownerId: string
+    ativa?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    barbeiros?: BarbeiroUncheckedCreateNestedManyWithoutBarbeariaInput
+    servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeariaInput
+  }
+
+  export type BarbeariaCreateOrConnectWithoutAgendamentosInput = {
+    where: BarbeariaWhereUniqueInput
+    create: XOR<BarbeariaCreateWithoutAgendamentosInput, BarbeariaUncheckedCreateWithoutAgendamentosInput>
+  }
+
+  export type BarbeiroCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    foto?: string | null
+    ativo?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    barbearia: BarbeariaCreateNestedOneWithoutBarbeirosInput
+    servicos?: ServicoCreateNestedManyWithoutBarbeiroInput
+    horarios?: HorarioDisponivelCreateNestedManyWithoutBarbeiroInput
+  }
+
+  export type BarbeiroUncheckedCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    foto?: string | null
+    barbeariaId: string
+    ativo?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    servicos?: ServicoUncheckedCreateNestedManyWithoutBarbeiroInput
+    horarios?: HorarioDisponivelUncheckedCreateNestedManyWithoutBarbeiroInput
+  }
+
+  export type BarbeiroCreateOrConnectWithoutAgendamentosInput = {
+    where: BarbeiroWhereUniqueInput
+    create: XOR<BarbeiroCreateWithoutAgendamentosInput, BarbeiroUncheckedCreateWithoutAgendamentosInput>
+  }
+
+  export type ServicoCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    preco: number
+    duracao: number
+    ativo?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    barbearia: BarbeariaCreateNestedOneWithoutServicosInput
+    barbeiro?: BarbeiroCreateNestedOneWithoutServicosInput
+  }
+
+  export type ServicoUncheckedCreateWithoutAgendamentosInput = {
+    id?: string
+    nome: string
+    preco: number
+    duracao: number
+    barbeariaId: string
+    barbeiroId?: string | null
+    ativo?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ServicoCreateOrConnectWithoutAgendamentosInput = {
+    where: ServicoWhereUniqueInput
+    create: XOR<ServicoCreateWithoutAgendamentosInput, ServicoUncheckedCreateWithoutAgendamentosInput>
+  }
+
+  export type UserUpsertWithoutAgendamentosInput = {
+    update: XOR<UserUpdateWithoutAgendamentosInput, UserUncheckedUpdateWithoutAgendamentosInput>
+    create: XOR<UserCreateWithoutAgendamentosInput, UserUncheckedCreateWithoutAgendamentosInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAgendamentosInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAgendamentosInput, UserUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type UserUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: NullableStringFieldUpdateOperationsInput | string | null
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo?: EnumUserTypeFieldUpdateOperationsInput | $Enums.UserType
+    plano?: EnumPlanoFieldUpdateOperationsInput | $Enums.Plano
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    authVersion?: IntFieldUpdateOperationsInput | number
+    verificationAttempts?: IntFieldUpdateOperationsInput | number
+    verificationCode?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetPasswordExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    latestPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    planoExpiraEm?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    barbearias?: BarbeariaUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    senha?: NullableStringFieldUpdateOperationsInput | string | null
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    tipo?: EnumUserTypeFieldUpdateOperationsInput | $Enums.UserType
+    plano?: EnumPlanoFieldUpdateOperationsInput | $Enums.Plano
+    googleId?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    authVersion?: IntFieldUpdateOperationsInput | number
+    verificationAttempts?: IntFieldUpdateOperationsInput | number
+    verificationCode?: NullableStringFieldUpdateOperationsInput | string | null
+    verificationExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
+    resetPasswordExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    subscriptionId?: NullableStringFieldUpdateOperationsInput | string | null
+    latestPaymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    subscriptionStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    planoExpiraEm?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    barbearias?: BarbeariaUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type BarbeariaUpsertWithoutAgendamentosInput = {
+    update: XOR<BarbeariaUpdateWithoutAgendamentosInput, BarbeariaUncheckedUpdateWithoutAgendamentosInput>
+    create: XOR<BarbeariaCreateWithoutAgendamentosInput, BarbeariaUncheckedCreateWithoutAgendamentosInput>
+    where?: BarbeariaWhereInput
+  }
+
+  export type BarbeariaUpdateToOneWithWhereWithoutAgendamentosInput = {
+    where?: BarbeariaWhereInput
+    data: XOR<BarbeariaUpdateWithoutAgendamentosInput, BarbeariaUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type BarbeariaUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    descricao?: NullableStringFieldUpdateOperationsInput | string | null
+    endereco?: StringFieldUpdateOperationsInput | string
+    cidade?: StringFieldUpdateOperationsInput | string
+    estado?: StringFieldUpdateOperationsInput | string
+    cep?: NullableStringFieldUpdateOperationsInput | string | null
+    pontoReferencia?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    mensagemLembrete?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteAtivo?: BoolFieldUpdateOperationsInput | boolean
+    foto?: NullableStringFieldUpdateOperationsInput | string | null
+    fotos?: BarbeariaUpdatefotosInput | string[]
+    ativa?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutBarbeariasNestedInput
+    barbeiros?: BarbeiroUpdateManyWithoutBarbeariaNestedInput
+    servicos?: ServicoUpdateManyWithoutBarbeariaNestedInput
+  }
+
+  export type BarbeariaUncheckedUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    descricao?: NullableStringFieldUpdateOperationsInput | string | null
+    endereco?: StringFieldUpdateOperationsInput | string
+    cidade?: StringFieldUpdateOperationsInput | string
+    estado?: StringFieldUpdateOperationsInput | string
+    cep?: NullableStringFieldUpdateOperationsInput | string | null
+    pontoReferencia?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    longitude?: NullableFloatFieldUpdateOperationsInput | number | null
+    telefone?: NullableStringFieldUpdateOperationsInput | string | null
+    whatsapp?: NullableStringFieldUpdateOperationsInput | string | null
+    mensagemLembrete?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteAtivo?: BoolFieldUpdateOperationsInput | boolean
+    foto?: NullableStringFieldUpdateOperationsInput | string | null
+    fotos?: BarbeariaUpdatefotosInput | string[]
+    ownerId?: StringFieldUpdateOperationsInput | string
+    ativa?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    barbeiros?: BarbeiroUncheckedUpdateManyWithoutBarbeariaNestedInput
+    servicos?: ServicoUncheckedUpdateManyWithoutBarbeariaNestedInput
+  }
+
+  export type BarbeiroUpsertWithoutAgendamentosInput = {
+    update: XOR<BarbeiroUpdateWithoutAgendamentosInput, BarbeiroUncheckedUpdateWithoutAgendamentosInput>
+    create: XOR<BarbeiroCreateWithoutAgendamentosInput, BarbeiroUncheckedCreateWithoutAgendamentosInput>
+    where?: BarbeiroWhereInput
+  }
+
+  export type BarbeiroUpdateToOneWithWhereWithoutAgendamentosInput = {
+    where?: BarbeiroWhereInput
+    data: XOR<BarbeiroUpdateWithoutAgendamentosInput, BarbeiroUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type BarbeiroUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    foto?: NullableStringFieldUpdateOperationsInput | string | null
+    ativo?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    barbearia?: BarbeariaUpdateOneRequiredWithoutBarbeirosNestedInput
+    servicos?: ServicoUpdateManyWithoutBarbeiroNestedInput
+    horarios?: HorarioDisponivelUpdateManyWithoutBarbeiroNestedInput
+  }
+
+  export type BarbeiroUncheckedUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    foto?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    ativo?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    servicos?: ServicoUncheckedUpdateManyWithoutBarbeiroNestedInput
+    horarios?: HorarioDisponivelUncheckedUpdateManyWithoutBarbeiroNestedInput
+  }
+
+  export type ServicoUpsertWithoutAgendamentosInput = {
+    update: XOR<ServicoUpdateWithoutAgendamentosInput, ServicoUncheckedUpdateWithoutAgendamentosInput>
+    create: XOR<ServicoCreateWithoutAgendamentosInput, ServicoUncheckedCreateWithoutAgendamentosInput>
+    where?: ServicoWhereInput
+  }
+
+  export type ServicoUpdateToOneWithWhereWithoutAgendamentosInput = {
+    where?: ServicoWhereInput
+    data: XOR<ServicoUpdateWithoutAgendamentosInput, ServicoUncheckedUpdateWithoutAgendamentosInput>
+  }
+
+  export type ServicoUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    preco?: FloatFieldUpdateOperationsInput | number
+    duracao?: IntFieldUpdateOperationsInput | number
+    ativo?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    barbearia?: BarbeariaUpdateOneRequiredWithoutServicosNestedInput
+    barbeiro?: BarbeiroUpdateOneWithoutServicosNestedInput
+  }
+
+  export type ServicoUncheckedUpdateWithoutAgendamentosInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    nome?: StringFieldUpdateOperationsInput | string
+    preco?: FloatFieldUpdateOperationsInput | number
+    duracao?: IntFieldUpdateOperationsInput | number
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: NullableStringFieldUpdateOperationsInput | string | null
+    ativo?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BarbeariaCreateManyOwnerInput = {
@@ -10936,6 +13705,22 @@ export namespace Prisma {
     foto?: string | null
     fotos?: BarbeariaCreatefotosInput | string[]
     ativa?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoCreateManyUserInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    barbeariaId: string
+    barbeiroId: string
+    servicoId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10963,6 +13748,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbeiros?: BarbeiroUpdateManyWithoutBarbeariaNestedInput
     servicos?: ServicoUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeariaUncheckedUpdateWithoutOwnerInput = {
@@ -10988,6 +13774,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbeiros?: BarbeiroUncheckedUpdateManyWithoutBarbeariaNestedInput
     servicos?: ServicoUncheckedUpdateManyWithoutBarbeariaNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeariaNestedInput
   }
 
   export type BarbeariaUncheckedUpdateManyWithoutOwnerInput = {
@@ -11013,6 +13800,54 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AgendamentoUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    barbearia?: BarbeariaUpdateOneRequiredWithoutAgendamentosNestedInput
+    barbeiro?: BarbeiroUpdateOneRequiredWithoutAgendamentosNestedInput
+    servico?: ServicoUpdateOneRequiredWithoutAgendamentosNestedInput
+  }
+
+  export type AgendamentoUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BarbeiroCreateManyBarbeariaInput = {
     id?: string
     nome: string
@@ -11033,6 +13868,22 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type AgendamentoCreateManyBarbeariaInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeiroId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type BarbeiroUpdateWithoutBarbeariaInput = {
     id?: StringFieldUpdateOperationsInput | string
     nome?: StringFieldUpdateOperationsInput | string
@@ -11042,6 +13893,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     servicos?: ServicoUpdateManyWithoutBarbeiroNestedInput
     horarios?: HorarioDisponivelUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeiroUncheckedUpdateWithoutBarbeariaInput = {
@@ -11053,6 +13905,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     servicos?: ServicoUncheckedUpdateManyWithoutBarbeiroNestedInput
     horarios?: HorarioDisponivelUncheckedUpdateManyWithoutBarbeiroNestedInput
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutBarbeiroNestedInput
   }
 
   export type BarbeiroUncheckedUpdateManyWithoutBarbeariaInput = {
@@ -11073,6 +13926,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbeiro?: BarbeiroUpdateOneWithoutServicosNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutServicoNestedInput
   }
 
   export type ServicoUncheckedUpdateWithoutBarbeariaInput = {
@@ -11084,6 +13938,7 @@ export namespace Prisma {
     ativo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutServicoNestedInput
   }
 
   export type ServicoUncheckedUpdateManyWithoutBarbeariaInput = {
@@ -11093,6 +13948,54 @@ export namespace Prisma {
     duracao?: IntFieldUpdateOperationsInput | number
     barbeiroId?: NullableStringFieldUpdateOperationsInput | string | null
     ativo?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUpdateWithoutBarbeariaInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutAgendamentosNestedInput
+    barbeiro?: BarbeiroUpdateOneRequiredWithoutAgendamentosNestedInput
+    servico?: ServicoUpdateOneRequiredWithoutAgendamentosNestedInput
+  }
+
+  export type AgendamentoUncheckedUpdateWithoutBarbeariaInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUncheckedUpdateManyWithoutBarbeariaInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11119,6 +14022,22 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type AgendamentoCreateManyBarbeiroInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeariaId: string
+    servicoId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ServicoUpdateWithoutBarbeiroInput = {
     id?: StringFieldUpdateOperationsInput | string
     nome?: StringFieldUpdateOperationsInput | string
@@ -11128,6 +14047,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     barbearia?: BarbeariaUpdateOneRequiredWithoutServicosNestedInput
+    agendamentos?: AgendamentoUpdateManyWithoutServicoNestedInput
   }
 
   export type ServicoUncheckedUpdateWithoutBarbeiroInput = {
@@ -11139,6 +14059,7 @@ export namespace Prisma {
     ativo?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    agendamentos?: AgendamentoUncheckedUpdateManyWithoutServicoNestedInput
   }
 
   export type ServicoUncheckedUpdateManyWithoutBarbeiroInput = {
@@ -11181,6 +14102,118 @@ export namespace Prisma {
     horaFim?: StringFieldUpdateOperationsInput | string
     almocoInicio?: NullableStringFieldUpdateOperationsInput | string | null
     almocoFim?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUpdateWithoutBarbeiroInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutAgendamentosNestedInput
+    barbearia?: BarbeariaUpdateOneRequiredWithoutAgendamentosNestedInput
+    servico?: ServicoUpdateOneRequiredWithoutAgendamentosNestedInput
+  }
+
+  export type AgendamentoUncheckedUpdateWithoutBarbeiroInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUncheckedUpdateManyWithoutBarbeiroInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    servicoId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoCreateManyServicoInput = {
+    id?: string
+    data: string
+    horario: string
+    nomeCliente: string
+    telefoneCliente: string
+    status?: $Enums.StatusAgendamento
+    guestTokenHash?: string | null
+    lembreteEnviado?: boolean
+    userId?: string | null
+    barbeariaId: string
+    barbeiroId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AgendamentoUpdateWithoutServicoInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutAgendamentosNestedInput
+    barbearia?: BarbeariaUpdateOneRequiredWithoutAgendamentosNestedInput
+    barbeiro?: BarbeiroUpdateOneRequiredWithoutAgendamentosNestedInput
+  }
+
+  export type AgendamentoUncheckedUpdateWithoutServicoInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AgendamentoUncheckedUpdateManyWithoutServicoInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    data?: StringFieldUpdateOperationsInput | string
+    horario?: StringFieldUpdateOperationsInput | string
+    nomeCliente?: StringFieldUpdateOperationsInput | string
+    telefoneCliente?: StringFieldUpdateOperationsInput | string
+    status?: EnumStatusAgendamentoFieldUpdateOperationsInput | $Enums.StatusAgendamento
+    guestTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lembreteEnviado?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    barbeariaId?: StringFieldUpdateOperationsInput | string
+    barbeiroId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

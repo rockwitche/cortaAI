@@ -34,4 +34,5 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`🚀 Backend CortaAí rodando em http://localhost:${port}/api`);
 }
-await bootstrap();
+
+void bootstrap();

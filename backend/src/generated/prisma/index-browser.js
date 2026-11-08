@@ -203,6 +203,23 @@ exports.Prisma.ServicoScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AgendamentoScalarFieldEnum = {
+  id: 'id',
+  data: 'data',
+  horario: 'horario',
+  nomeCliente: 'nomeCliente',
+  telefoneCliente: 'telefoneCliente',
+  status: 'status',
+  guestTokenHash: 'guestTokenHash',
+  lembreteEnviado: 'lembreteEnviado',
+  userId: 'userId',
+  barbeariaId: 'barbeariaId',
+  barbeiroId: 'barbeiroId',
+  servicoId: 'servicoId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -228,12 +245,20 @@ exports.Plano = exports.$Enums.Plano = {
   PREMIUM: 'PREMIUM'
 };
 
+exports.StatusAgendamento = exports.$Enums.StatusAgendamento = {
+  PENDENTE: 'PENDENTE',
+  CONFIRMADO: 'CONFIRMADO',
+  CONCLUIDO: 'CONCLUIDO',
+  CANCELADO: 'CANCELADO'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Barbearia: 'Barbearia',
   Barbeiro: 'Barbeiro',
   HorarioDisponivel: 'HorarioDisponivel',
-  Servico: 'Servico'
+  Servico: 'Servico',
+  Agendamento: 'Agendamento'
 };
 
 /**
