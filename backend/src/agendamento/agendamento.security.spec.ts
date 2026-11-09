@@ -1,9 +1,29 @@
+import { vi } from 'vitest';
 import { createHash } from 'crypto';
 import { AgendamentoService } from './agendamento.service';
 
+describe('Disponibilidade por duração', () => {
+  const service = new AgendamentoService({ agendamento: {
+    findMany: async () => [{ horario: '10:00', servico: { duracao: 90 } }],
+  } } as any);
+  it('preserva a consulta sem duração', async () => {
+    expect(await service.horariosOcupados('barber', '2030-01-07')).toEqual(['10:00']);
+  });
+  it('bloqueia sobreposições e permite horários adjacentes', async () => {
+    const slots = await service.horariosOcupados('barber', '2030-01-07', 30);
+    expect(slots).toContain('09:31');
+    expect(slots).toContain('11:29');
+    expect(slots).not.toContain('09:30');
+    expect(slots).not.toContain('11:30');
+  });
+  it('rejeita duração inválida', async () => {
+    await expect(service.horariosOcupados('barber', '2030-01-07', 0)).rejects.toThrow();
+  });
+});
+
 function fixture() {
   const tx: any = {
-    $executeRaw: jest.fn(async () => 1),
+    $executeRaw: vi.fn(async () => 1),
     barbearia: {
       findUnique: async () => ({
         ativa: true,
@@ -28,12 +48,12 @@ function fixture() {
     },
     servico: { findFirst: async () => ({ duracao: 30, barbeiroId: 'barber' }) },
     agendamento: {
-      findMany: jest.fn(async () => []),
-      count: jest.fn(async () => 0),
-      create: jest.fn(async ({ data }) => ({ id: 'booking', ...data })),
+      findMany: vi.fn(async () => []),
+      count: vi.fn(async () => 0),
+      create: vi.fn(async ({ data }) => ({ id: 'booking', ...data })),
     },
   };
-  const prisma: any = { $transaction: jest.fn(async (fn) => fn(tx)) };
+  const prisma: any = { $transaction: vi.fn(async (fn) => fn(tx)) };
   return { service: new AgendamentoService(prisma), tx };
 }
 const input = {
@@ -48,9 +68,9 @@ const input = {
 
 describe('Booking security', () => {
   beforeEach(() =>
-    jest.useFakeTimers({ now: new Date('2026-09-17T12:00:00Z') }),
+    vi.useFakeTimers({ now: new Date('2026-09-17T12:00:00Z') }),
   );
-  afterEach(() => jest.useRealTimers());
+  afterEach(() => vi.useRealTimers());
   it('creates a valid booking with a private receipt and only persists its hash', async () => {
     const f = fixture();
     const result = await f.service.create(input);

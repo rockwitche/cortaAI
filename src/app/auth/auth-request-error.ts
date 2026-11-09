@@ -23,6 +23,7 @@ export function getAuthRequestErrorMessage(
     if (error.status >= 500) {
       return 'O servidor encontrou um problema. Tente novamente em alguns instantes.';
     }
+    return fallback;
   }
 
   return getMessage(error) || fallback;
@@ -33,11 +34,14 @@ function getErrorName(error: unknown): string | undefined {
 }
 
 function getMessage(error: unknown): string | undefined {
-  if (typeof error === 'string') {
-    return error;
+  if (!isRecord(error)) return undefined;
+  const message = error['message'];
+  if (Array.isArray(message)) {
+    return (
+      message.filter((item): item is string => typeof item === 'string').join(' ') || undefined
+    );
   }
-
-  return isRecord(error) && typeof error['message'] === 'string' ? error['message'] : undefined;
+  return typeof message === 'string' ? message : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

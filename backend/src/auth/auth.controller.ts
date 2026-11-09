@@ -12,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service.js';
-import { GoogleAuthGuard } from './guards/google-auth.guard.js';
+import {
+  GoogleAuthGuard,
+  type GoogleAuthRequest,
+} from './guards/google-auth.guard.js';
 import {
   RegisterDto,
   LoginDto,
@@ -106,20 +109,25 @@ export class AuthController {
   // ─── Verificação de e-mail ───────────────────────────────────────────────────
 
   @Post('verify-email')
-  @UseGuards(AuthGuard('jwt'))
   async verifyEmail(
-    @Req() req: Request,
     @Body() dto: VerifyEmailDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const user = req.user as any;
-    const result = await this.authService.verifyEmail(user.id, dto);
+    const result = await this.authService.verifyEmail(dto);
 
     if (result.access_token) {
-      res.cookie('access_token', result.access_token, this.getCookieOptions());
+      res.cookie(
+        'access_token',
+        result.access_token,
+        this.getCookieOptions(result.rememberMe),
+      );
     }
 
-    return { message: result.message };
+    return {
+      message: result.message,
+      user: result.user,
+      rememberMe: result.rememberMe,
+    };
   }
 
   // ─── Reenviar código ─────────────────────────────────────────────────────────
@@ -148,10 +156,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const user = req.user as any;
     await this.authService.logout(user.id);
     res.clearCookie('access_token', this.getClearCookieOptions());
@@ -168,19 +173,22 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleCallback(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const googleUser = req.user as any;
-    const result = await this.authService.handleGoogleLogin(googleUser);
-
-    if (result.access_token) {
-      res.cookie('access_token', result.access_token, this.getCookieOptions());
+  async googleCallback(@Req() req: GoogleAuthRequest, @Res() res: Response) {
+    const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:4200';
+    try {
+      const result = await this.authService.handleGoogleLogin(
+        req.user as any,
+        req.googleAuth?.tipo,
+        req.googleAuth?.rememberMe,
+      );
+      res.cookie(
+        'access_token',
+        result.access_token,
+        this.getCookieOptions(req.googleAuth?.rememberMe),
+      );
+      res.redirect(`${frontendUrl.replace(/\/$/, '')}/auth/google/callback`);
+    } catch {
+      res.redirect(`${frontendUrl.replace(/\/$/, '')}/login?oauthError=failed`);
     }
-
-    const frontendUrl =
-      process.env.FRONTEND_URL ?? 'http://localhost:4200';
-    res.redirect(`${frontendUrl}/dashboard`);
   }
 }

@@ -10,6 +10,7 @@ import { BarbeiroModule } from './barbeiro/barbeiro.module.js';
 import { ServicoModule } from './servico/servico.module.js';
 import { MapaModule } from './mapa/mapa.module.js';
 import { HorarioModule } from './horario/horario.module.js';
+import { AgendamentoModule } from './agendamento/agendamento.module.js';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { HorarioModule } from './horario/horario.module.js';
     ServicoModule,
     MapaModule,
     HorarioModule,
+    AgendamentoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

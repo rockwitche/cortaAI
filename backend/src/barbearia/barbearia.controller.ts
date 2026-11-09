@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { BarberAuthGuard } from '../auth/guards/barber-auth.guard.js';
 import type { Request } from 'express';
 import { BarbeariaService } from './barbearia.service.js';
 import { CreateBarbeariaDto, UpdateBarbeariaDto } from './dto/barbearia.dto.js';
@@ -14,7 +14,7 @@ export class BarbeariaController {
   }
 
   @Get('owner/me')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   minhas(@Req() req: Request) {
     return this.service.findAllByOwner((req.user as { id: string }).id);
   }
@@ -25,19 +25,19 @@ export class BarbeariaController {
   }
 
   @Post()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   create(@Req() req: Request, @Body() dto: CreateBarbeariaDto) {
     return this.service.create((req.user as { id: string }).id, dto);
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   update(@Req() req: Request, @Param('id') id: string, @Body() dto: UpdateBarbeariaDto) {
     return this.service.update(id, (req.user as { id: string }).id, dto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   remove(@Req() req: Request, @Param('id') id: string) {
     return this.service.remove(id, (req.user as { id: string }).id);
   }

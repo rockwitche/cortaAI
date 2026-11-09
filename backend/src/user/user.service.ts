@@ -104,4 +104,9 @@ export class UserService {
 
     return { message: 'Conta excluída com sucesso.' };
   }
+
+  async deleteAvatar(id: string) {
+    await this.prisma.user.update({ where: { id }, data: { avatar: null } });
+    return { message: 'Foto de perfil removida.', user: await this.findById(id) };
+  }
 }

@@ -32,12 +32,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           }
         },
         ExtractJwt.fromAuthHeaderAsBearerToken(),
-        (req: Request) => {
-          if (req?.body && typeof req.body.verificationToken === 'string') {
-            return req.body.verificationToken;
-          }
-          return null;
-        },
       ]),
       ignoreExpiration: false,
       secretOrKey: secret,
@@ -48,17 +42,25 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     sub: string;
     email: string;
     ver: number;
+    purpose: string;
   }) {
+    if (payload.purpose !== 'access' || typeof payload.sub !== 'string')
+      return null;
     // Verifica a versão de autenticação para invalidar tokens após logout ou mudança de senha
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, authVersion: true, emailVerified: true },
+      select: { id: true, authVersion: true, emailVerified: true, tipo: true },
     });
 
-    if (!user || user.authVersion !== payload.ver) {
+    if (!user || !user.emailVerified || user.authVersion !== payload.ver) {
       return null;
     }
 
-    return { id: payload.sub, email: payload.email, ver: payload.ver };
+    return {
+      id: payload.sub,
+      email: payload.email,
+      ver: payload.ver,
+      tipo: user.tipo,
+    };
   }
 }

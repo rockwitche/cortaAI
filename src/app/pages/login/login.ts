@@ -2,7 +2,7 @@ import { ConfirmarEmailComponent } from '../../auth/confirmar-email';
 import { Component, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthResponse, AuthService } from '../../auth/auth.service';
 import { getAuthRequestErrorMessage } from '../../auth/auth-request-error';
@@ -17,6 +17,7 @@ import { getAuthRequestErrorMessage } from '../../auth/auth-request-error';
 export class LoginComponent {
   email = '';
   emailVerificacao = '';
+  avisoVerificacao = '';
   senha = '';
   lembrarConta = false;
   erro = '';
@@ -26,7 +27,22 @@ export class LoginComponent {
     private servicoAuth: AuthService,
     private roteador: Router,
     private zonaNg: NgZone,
-  ) {}
+    rota: ActivatedRoute,
+  ) {
+    const oauthError = rota.snapshot.queryParamMap.get('oauthError');
+    if (oauthError) {
+      this.erro =
+        oauthError === 'cancelled'
+          ? 'A entrada com Google foi cancelada. Você pode tentar novamente.'
+          : 'Não foi possível entrar com Google. Tente novamente ou entre com e-mail e senha.';
+    }
+  }
+
+  entrarComGoogle(): void {
+    if (this.carregando) return;
+    this.carregando = true;
+    this.servicoAuth.loginWithGoogle('CLIENTE', this.lembrarConta);
+  }
 
   aoEnviar() {
     this.erro = '';
@@ -71,6 +87,7 @@ export class LoginComponent {
           }
 
           this.emailVerificacao = resposta.email || this.email.trim().toLowerCase();
+          this.avisoVerificacao = resposta.message || '';
           return;
         }
 
@@ -79,10 +96,7 @@ export class LoginComponent {
           return;
         }
 
-        const destino = resposta.user.tipo === 'BARBEIRO' || resposta.user.tipo === 'ADMIN'
-          ? ['/dashboard']
-          : ['/barbearias'];
-        const navegou = await this.roteador.navigate(destino);
+        const navegou = await this.roteador.navigateByUrl(this.servicoAuth.homeFor(resposta.user));
 
         if (!navegou) {
           this.erro = 'O login foi concluído, mas não foi possível abrir a próxima página.';
@@ -92,5 +106,4 @@ export class LoginComponent {
       this.erro = 'O login foi concluído, mas não foi possível abrir a próxima página.';
     }
   }
-
 }

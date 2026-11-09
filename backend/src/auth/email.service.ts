@@ -34,11 +34,12 @@ export class EmailService {
       return null;
     }
 
-    const oAuth2Client = new google.auth.OAuth2(
+    const oAuth2Client = new google.auth.OAuth2({
       clientId,
       clientSecret,
-      'https://developers.google.com/oauthplayground',
-    );
+      redirectUri: 'https://developers.google.com/oauthplayground',
+      transporterOptions: { timeout: 10_000, retry: false },
+    });
 
     oAuth2Client.setCredentials({ refresh_token: refreshToken });
 
@@ -52,6 +53,9 @@ export class EmailService {
 
     return nodemailer.createTransport({
       service: 'gmail',
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
       auth: {
         type: 'OAuth2',
         user: gmailUser,
@@ -89,7 +93,12 @@ export class EmailService {
 
       return true;
     } catch (error) {
-      this.logger.error('Erro ao enviar e-mail via Gmail:', error);
+      // Erros OAuth podem carregar credenciais no objeto da requisição.
+      const code = (error as { code?: unknown })?.code;
+      const safeCodes = ['EAUTH', 'ETIMEDOUT', 'ECONNECTION', 'ESOCKET'];
+      this.logger.error(
+        `Falha no envio de e-mail (${typeof code === 'string' && safeCodes.includes(code) ? code : 'provedor indisponível'}).`,
+      );
       return false;
     }
   }

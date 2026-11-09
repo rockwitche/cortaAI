@@ -8,7 +8,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { createHash, createHmac, randomBytes, randomInt } from 'crypto';
+import {
+  createHash,
+  createHmac,
+  randomBytes,
+  randomInt,
+  timingSafeEqual,
+} from 'crypto';
 import type { User } from '../generated/prisma/index.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { EmailService } from './email.service.js';
@@ -39,18 +45,27 @@ export class AuthService {
   }
 
   async checkEmailExists(email: string) {
-    if (!email || typeof email !== 'string' || email.trim().length === 0 || email.length > 254) {
+    if (
+      !email ||
+      typeof email !== 'string' ||
+      email.trim().length === 0 ||
+      email.length > 254
+    ) {
       return { exists: false, valid: false, reason: 'E-mail inválido.' };
     }
     const normalized = email.trim().toLowerCase();
     const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized);
-    if (!valid) return { exists: false, valid: false, reason: 'E-mail inválido.' };
+    if (!valid)
+      return { exists: false, valid: false, reason: 'E-mail inválido.' };
 
-    const user = await this.prisma.user.findUnique({ where: { email: normalized } });
+    const user = await this.prisma.user.findUnique({
+      where: { email: normalized },
+    });
     return {
-      exists: !!user,
+      exists: !!user?.emailVerified,
+      pendingVerification: !!user && !user.emailVerified,
       valid: true,
-      reason: user ? 'Este e-mail já está cadastrado.' : null,
+      reason: user?.emailVerified ? 'Este e-mail já está cadastrado.' : null,
     };
   }
 
@@ -98,13 +113,86 @@ export class AuthService {
       .digest('hex');
   }
 
-  private generateJwt(user: User) {
+  private generateJwt(user: User, rememberMe = false) {
     const payload = {
       sub: user.id,
       email: user.email,
       ver: user.authVersion,
+      purpose: 'access',
     };
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, {
+      expiresIn: rememberMe ? '30d' : '1d',
+    });
+  }
+
+  private verificationToken(user: User, rememberMe = false) {
+    return this.jwtService.sign(
+      {
+        sub: user.id,
+        email: user.email,
+        ver: user.authVersion,
+        purpose: 'email-verification',
+        rememberMe,
+      },
+      { expiresIn: '30m' },
+    );
+  }
+
+  private async pendingVerification(user: User, rememberMe = false) {
+    let verificationEmailSent = true;
+    try {
+      await this.sendChallenge(user);
+    } catch (error) {
+      if (!(error instanceof ServiceUnavailableException)) throw error;
+      verificationEmailSent = false;
+    }
+    return {
+      requiresVerification: true,
+      email: user.email,
+      verificationToken: this.verificationToken(user, rememberMe),
+      verificationEmailSent,
+      message: verificationEmailSent
+        ? 'Enviamos um código para confirmar seu e-mail.'
+        : 'Sua conta aguarda confirmação, mas não conseguimos enviar o e-mail. Use Reenviar código para tentar novamente.',
+    };
+  }
+
+  private async verificationUser(token: string, email?: string) {
+    let payload: {
+      sub: string;
+      email: string;
+      ver: number;
+      purpose: string;
+      rememberMe?: boolean;
+    };
+    try {
+      payload = this.jwtService.verify(token);
+    } catch {
+      throw new UnauthorizedException(
+        'Sua confirmação expirou. Faça login para receber outro código.',
+      );
+    }
+    if (
+      payload.purpose !== 'email-verification' ||
+      typeof payload.sub !== 'string'
+    ) {
+      throw new UnauthorizedException('Token de confirmação inválido.');
+    }
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
+    if (
+      !user ||
+      user.emailVerified ||
+      user.authVersion !== payload.ver ||
+      user.email !== payload.email ||
+      (email && this.normalizeEmail(email) !== user.email)
+    ) {
+      throw new UnauthorizedException(
+        'Confirmação inválida. Faça login novamente.',
+      );
+    }
+    return { user, rememberMe: payload.rememberMe === true };
   }
 
   // ─── Registro ───────────────────────────────────────────────────────────────
@@ -114,7 +202,13 @@ export class AuthService {
     this.validatePassword(dto.senha);
 
     const existing = await this.prisma.user.findUnique({ where: { email } });
-    if (existing) throw new ConflictException('E-mail já cadastrado.');
+    if (existing) {
+      if (existing.emailVerified) throw new ConflictException('E-mail já cadastrado.');
+      if (!existing.senha || !(await bcrypt.compare(dto.senha, existing.senha))) {
+        throw new UnauthorizedException('Este e-mail aguarda confirmação. Use a senha informada no primeiro cadastro para continuar.');
+      }
+      return this.pendingVerification(existing, dto.rememberMe);
+    }
 
     const hashedPassword = await bcrypt.hash(dto.senha, 12);
 
@@ -129,17 +223,7 @@ export class AuthService {
       },
     });
 
-    // Envia código de verificação
-    await this.sendChallenge(user);
-
-    const verificationToken = this.generateJwt(user);
-
-    return {
-      message: 'Conta criada! Verifique seu e-mail para ativar a conta.',
-      email: user.email,
-      verificationToken,
-      requiresVerification: true,
-    };
+    return this.pendingVerification(user, dto.rememberMe);
   }
 
   // ─── Login ──────────────────────────────────────────────────────────────────
@@ -151,7 +235,10 @@ export class AuthService {
 
     if (!user || !user.senha) {
       // Timing safe: compara hash mesmo sem usuário
-      await bcrypt.compare(dto.senha, '$2b$12$placeholder.salt.for.timing.safety');
+      await bcrypt.compare(
+        dto.senha,
+        '$2b$12$placeholder.salt.for.timing.safety',
+      );
       throw new UnauthorizedException('E-mail ou senha incorretos.');
     }
 
@@ -161,18 +248,10 @@ export class AuthService {
     }
 
     if (!user.emailVerified) {
-      // Reenvia código de verificação
-      await this.sendChallenge(user);
-      const verificationToken = this.generateJwt(user);
-      return {
-        requiresVerification: true,
-        email: user.email,
-        verificationToken,
-        message: 'Verifique seu e-mail antes de entrar. Um novo código foi enviado.',
-      };
+      return this.pendingVerification(user, dto.rememberMe);
     }
 
-    const token = this.generateJwt(user);
+    const token = this.generateJwt(user, dto.rememberMe);
     const userPayload = {
       id: user.id,
       nome: user.nome,
@@ -182,17 +261,37 @@ export class AuthService {
       plano: user.plano,
       avatar: user.avatar,
     };
-    return { access_token: token, user: userPayload, rememberMe: dto.rememberMe };
+    return {
+      access_token: token,
+      user: userPayload,
+      rememberMe: dto.rememberMe,
+    };
   }
 
   // ─── Verificação de e-mail ──────────────────────────────────────────────────
 
   private async sendChallenge(user: User) {
+    // Reutiliza o desafio recente no login, evitando invalidar um código recém-enviado.
+    if (
+      user.verificationExpires &&
+      user.verificationExpires.getTime() > Date.now() + 14 * 60_000
+    ) {
+      return {
+        message:
+          'Um código já foi enviado. Aguarde um minuto antes de reenviar.',
+      };
+    }
     const code = String(randomInt(100000, 1000000));
     const nonce = randomBytes(24).toString('hex');
 
     const changed = await this.prisma.user.updateMany({
-      where: { id: user.id, emailVerified: false, senha: user.senha },
+      where: {
+        id: user.id,
+        emailVerified: false,
+        authVersion: user.authVersion,
+        verificationCode: user.verificationCode,
+        verificationExpires: user.verificationExpires,
+      },
       data: {
         verificationCode: nonce + ':' + this.otpHash(user.email, nonce, code),
         verificationAttempts: 0,
@@ -209,19 +308,27 @@ export class AuthService {
       user.nome,
     );
 
-    if (!sent)
+    if (!sent) {
+      await this.prisma.user.updateMany({
+        where: {
+          id: user.id,
+          verificationCode: nonce + ':' + this.otpHash(user.email, nonce, code),
+        },
+        data: { verificationCode: null, verificationExpires: null },
+      });
       throw new ServiceUnavailableException(
         'Não foi possível enviar o código. Tente novamente em instantes.',
       );
+    }
 
     return { message: 'Código enviado para ' + user.email };
   }
 
-  async verifyEmail(userId: string, dto: VerifyEmailDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-
-    if (!user) throw new UnauthorizedException('Usuário não encontrado.');
-    if (user.emailVerified) return { message: 'E-mail já verificado.' };
+  async verifyEmail(dto: VerifyEmailDto) {
+    const { user, rememberMe } = await this.verificationUser(
+      dto.verificationToken,
+      dto.email,
+    );
 
     if (
       !user.verificationCode ||
@@ -238,13 +345,29 @@ export class AuthService {
       );
     }
 
+    // Reserva uma tentativa atomicamente, inclusive quando chegam pedidos simultâneos.
+    const attempt = await this.prisma.user.updateMany({
+      where: {
+        id: user.id,
+        emailVerified: false,
+        authVersion: user.authVersion,
+        verificationCode: user.verificationCode,
+        verificationExpires: { gt: new Date() },
+        verificationAttempts: { lt: MAX_ATTEMPTS },
+      },
+      data: { verificationAttempts: { increment: 1 } },
+    });
+    if (!attempt.count)
+      throw new BadRequestException(
+        'Código expirado ou limite de tentativas atingido. Solicite um novo.',
+      );
+
     const [nonce, storedHash] = user.verificationCode.split(':');
     const expectedHash = this.otpHash(user.email, nonce, dto.code);
     const isValid =
       storedHash?.length === expectedHash.length &&
       (() => {
         try {
-          const { timingSafeEqual } = require('crypto');
           return timingSafeEqual(
             Buffer.from(storedHash, 'hex'),
             Buffer.from(expectedHash, 'hex'),
@@ -255,24 +378,36 @@ export class AuthService {
       })();
 
     if (!isValid) {
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { verificationAttempts: { increment: 1 } },
-      });
       throw new BadRequestException('Código incorreto.');
     }
 
-    const updatedUser = await this.prisma.user.update({
-      where: { id: user.id },
+    const verified = await this.prisma.user.updateMany({
+      where: {
+        id: user.id,
+        emailVerified: false,
+        authVersion: user.authVersion,
+        verificationCode: user.verificationCode,
+        verificationExpires: { gt: new Date() },
+      },
       data: {
         emailVerified: true,
         verificationCode: null,
         verificationExpires: null,
         verificationAttempts: 0,
+        authVersion: { increment: 1 },
       },
     });
+    if (!verified.count)
+      throw new BadRequestException(
+        'Código já utilizado ou substituído. Faça login novamente.',
+      );
+    const updatedUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+    });
+    if (!updatedUser)
+      throw new UnauthorizedException('Usuário não encontrado.');
 
-    const token = this.generateJwt(updatedUser);
+    const token = this.generateJwt(updatedUser, rememberMe);
     const userPayload = {
       id: updatedUser.id,
       nome: updatedUser.nome,
@@ -282,20 +417,24 @@ export class AuthService {
       plano: updatedUser.plano,
       avatar: updatedUser.avatar,
     };
-    return { access_token: token, user: userPayload, message: 'E-mail verificado com sucesso!' };
+    return {
+      access_token: token,
+      user: userPayload,
+      rememberMe,
+      message: 'E-mail verificado com sucesso!',
+    };
   }
 
   async resendCode(dto: ResendCodeDto) {
-    const email = this.normalizeEmail(dto.email);
-    const user = await this.prisma.user.findUnique({ where: { email } });
-
-    // Responde igual mesmo se não encontrar (evita enumeração)
-    if (!user || user.emailVerified) {
-      return { message: 'Se o e-mail estiver cadastrado e não verificado, um código será enviado.' };
-    }
-
-    await this.sendChallenge(user);
-    return { message: 'Novo código enviado para ' + email };
+    const { user, rememberMe } = await this.verificationUser(
+      dto.verificationToken,
+      dto.email,
+    );
+    const result = await this.sendChallenge(user);
+    return {
+      ...result,
+      verificationToken: this.verificationToken(user, rememberMe),
+    };
   }
 
   // ─── Forgot / Reset Password ────────────────────────────────────────────────
@@ -322,7 +461,8 @@ export class AuthService {
       },
     });
 
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:4200';
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:4200';
     const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}`;
 
     await this.emailService.sendPasswordReset(user.email, resetUrl, user.nome);
@@ -363,15 +503,28 @@ export class AuthService {
 
   // ─── Google OAuth ────────────────────────────────────────────────────────────
 
-  async handleGoogleLogin(googleUser: {
-    googleId: string;
-    email: string;
-    nome: string;
-    avatar?: string;
-  }) {
+  async handleGoogleLogin(
+    googleUser: {
+      googleId: string;
+      email: string;
+      nome: string;
+      avatar?: string;
+    },
+    tipo: 'CLIENTE' | 'BARBEIRO' = 'CLIENTE',
+    rememberMe = false,
+  ) {
     const email = this.normalizeEmail(googleUser.email);
 
-    let user = await this.prisma.user.findUnique({ where: { email } });
+    let user = await this.prisma.user.findUnique({
+      where: { googleId: googleUser.googleId },
+    });
+    user ??= await this.prisma.user.findUnique({ where: { email } });
+
+    if (user?.googleId && user.googleId !== googleUser.googleId) {
+      throw new UnauthorizedException(
+        'Esta conta está vinculada a outro perfil Google.',
+      );
+    }
 
     if (!user) {
       user = await this.prisma.user.create({
@@ -381,7 +534,7 @@ export class AuthService {
           googleId: googleUser.googleId,
           avatar: googleUser.avatar,
           emailVerified: true,
-          tipo: 'CLIENTE',
+          tipo,
         },
       });
     } else if (!user.googleId) {
@@ -391,11 +544,16 @@ export class AuthService {
           googleId: googleUser.googleId,
           emailVerified: true,
           avatar: user.avatar ?? googleUser.avatar,
+          // Não preserve uma senha criada por terceiros antes da prova de posse do e-mail.
+          ...(!user.emailVerified ? { senha: null } : {}),
+          verificationCode: null,
+          verificationExpires: null,
+          authVersion: { increment: 1 },
         },
       });
     }
 
-    return { access_token: this.generateJwt(user) };
+    return { access_token: this.generateJwt(user, rememberMe) };
   }
 
   // ─── Logout ──────────────────────────────────────────────────────────────────

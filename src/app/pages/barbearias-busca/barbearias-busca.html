@@ -22,6 +22,15 @@
             <span class="menu-suspenso-email">{{ usuario.email }}</span>
           </div>
           <div class="menu-suspenso-divisor"></div>
+          <a class="menu-suspenso-item" routerLink="/perfil" (click)="menuAberto = false">
+            <i class="fa-solid fa-user" aria-hidden="true"></i> Meu Perfil
+          </a>
+          @if (usuario.tipo === 'BARBEIRO') {
+            <a class="menu-suspenso-item" routerLink="/dashboard" (click)="menuAberto = false">
+              <i class="fa-solid fa-store" aria-hidden="true"></i>
+              Painel barbearia
+            </a>
+          }
           <button class="menu-suspenso-item menu-suspenso-sair" (click)="sair()">
             <i class="fa-solid fa-right-from-bracket"></i>
             Sair
@@ -44,6 +53,12 @@
   <p class="texto-subtitulo">
     Agende seu corte de cabelo com os melhores profissionais da sua cidade
   </p>
+  @if (usuario) {
+    <a class="botao-meus-agendamentos" routerLink="/meus-agendamentos">
+      <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+      Meus agendamentos
+    </a>
+  }
 </div>
 
 <section id="busca">
@@ -192,7 +207,7 @@
     </div>
   } @else if (buscaRealizada && barbearias.length > 0) {
     <div class="cabecalho-barbearias">
-      <h2>Barbearias em {{ cidadeSelecionada?.nome }}</h2>
+      <h2>{{ cidadeSelecionada ? 'Barbearias em ' + cidadeSelecionada.nome : estadoSelecionado ? 'Barbearias em ' + estadoSelecionado.nome : 'Todas as barbearias' }}</h2>
       <p>
         {{ barbearias.length }} barbearia{{ barbearias.length > 1 ? 's' : '' }} encontrada{{
           barbearias.length > 1 ? 's' : ''
@@ -277,6 +292,7 @@
               </div>
             }
             <a class="botao-agendar" [routerLink]="['/agendar', barbearia.slug || barbearia.id]">
+              <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
               Agendar
             </a>
           </div>
@@ -286,12 +302,12 @@
     </div>
   } @else if (buscaRealizada && barbearias.length === 0) {
     <div class="cabecalho-barbearias">
-      <h2>Barbearias em {{ cidadeSelecionada?.nome }}</h2>
+      <h2>{{ cidadeSelecionada ? 'Barbearias em ' + cidadeSelecionada.nome : estadoSelecionado ? 'Barbearias em ' + estadoSelecionado.nome : 'Todas as barbearias' }}</h2>
       @if (!erroBusca) { <p>0 barbearias encontradas</p> }
     </div>
     <div id="resultado">
       <i class="fa-solid fa-scissors"></i>
-      <p class="resultado-mensagem">Nenhuma barbearia encontrada nesta localização</p>
+      <p class="resultado-mensagem">{{ erroBusca ? 'Não foi possível carregar as barbearias' : 'Nenhuma barbearia encontrada' }}</p>
       <p class="resultado-dica">{{ erroBusca || 'Tente selecionar outro estado ou cidade' }}</p>
       @if (erroBusca) {
         <button class="botao-tentar-novamente" type="button" (click)="buscarBarbearias()">
@@ -302,7 +318,7 @@
     </div>
   } @else if (!erroBusca) {
     <div class="cabecalho-barbearias">
-      <h2>Todas as Barbearias</h2>
+      <h2>Encontre uma barbearia</h2>
       <p>Selecione um estado e cidade para buscar</p>
     </div>
     <div id="resultado">

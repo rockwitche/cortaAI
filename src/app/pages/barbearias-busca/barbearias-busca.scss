@@ -134,6 +134,7 @@ body {
 }
 
 .menu-suspenso-item {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -226,6 +227,25 @@ body {
     font-weight: 400;
   }
 }
+#texto .botao-meus-agendamentos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 12px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  background: #fff;
+  color: #071724;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover { background: #eaf0f6; }
+  &:focus-visible { outline: 3px solid #79b8ff; outline-offset: 4px; }
+}
+
 #busca {
   margin-top: -40px;
   width: min(60rem, calc(100% - 48px));
@@ -651,6 +671,36 @@ body {
   i {
     font-size: 2.5rem;
     color: #ccc;
+  }
+}
+
+.cartao-barbearia .botao-agendar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  margin-top: 20px;
+  padding: 12px 18px;
+  border: 1px solid #071724;
+  border-radius: 10px;
+  background: #071724;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #203b50;
+  }
+
+  &:focus-visible {
+    outline: 3px solid #4285d4;
+    outline-offset: 3px;
   }
 }
 

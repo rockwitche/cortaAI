@@ -7,7 +7,7 @@ import {
   MinLength,
   MaxLength,
   IsEnum,
-  Length,
+  Matches,
 } from 'class-validator';
 
 export enum UserType {
@@ -60,7 +60,7 @@ export class LoginDto {
 export class VerifyEmailDto {
   @IsString()
   @IsNotEmpty()
-  @Length(6, 6, { message: 'Código deve ter 6 dígitos' })
+  @Matches(/^\d{6}$/, { message: 'Código deve ter 6 dígitos' })
   code: string;
 
   @IsEmail({}, { message: 'Email inválido' })
@@ -68,8 +68,8 @@ export class VerifyEmailDto {
   email?: string;
 
   @IsString()
-  @IsOptional()
-  verificationToken?: string;
+  @IsNotEmpty({ message: 'Token de confirmação é obrigatório' })
+  verificationToken: string;
 }
 
 export class ResendCodeDto {
@@ -78,8 +78,8 @@ export class ResendCodeDto {
   email: string;
 
   @IsString()
-  @IsOptional()
-  verificationToken?: string;
+  @IsNotEmpty({ message: 'Token de confirmação é obrigatório' })
+  verificationToken: string;
 }
 
 export class ForgotPasswordDto {

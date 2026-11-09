@@ -67,4 +67,9 @@ export class UserController {
     const user = req.user as any;
     return this.userService.deleteAccount(user.id);
   }
+
+  @Delete('avatar')
+  async deleteAvatar(@Req() req: Request) {
+    return this.userService.deleteAvatar((req.user as { id: string }).id);
+  }
 }

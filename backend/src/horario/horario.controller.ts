@@ -7,7 +7,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { BarberAuthGuard } from '../auth/guards/barber-auth.guard.js';
 import { HorarioService } from './horario.service.js';
 import type { Request } from 'express';
 
@@ -20,7 +20,7 @@ export class HorarioController {
     return this.horarioService.findByBarbeiro(barbeiroId);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Put()
   async setHorarios(
     @Param('barbeiroId') barbeiroId: string,

@@ -1,13 +1,17 @@
 import { saveGuestReceipt } from '../../auth/guest-bookings';
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subscription, finalize, timeout } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService, User } from '../../auth/auth.service';
+import { getAuthRequestErrorMessage } from '../../auth/auth-request-error';
 import * as L from 'leaflet';
 
 interface Barbeiro {
+  ativo?: boolean;
   id: string;
   nome: string;
   foto: string | null;
@@ -28,6 +32,7 @@ interface Servico {
   nome: string;
   preco: number;
   duracao: number;
+  barbeiroId?: string | null;
 }
 
 interface Barbearia {
@@ -78,6 +83,9 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
   horariosGerados: string[] = [];
   horariosOcupados: string[] = [];
   carregandoHorarios = false;
+  erroHorarios = '';
+  private horariosRequest?: Subscription;
+  private readonly destroyRef = inject(DestroyRef);
 
   // Confirmação
   nomeCliente = '';
@@ -112,7 +120,7 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.telefoneCliente = this.getTelefonePersistido();
 
     // Carregar usuário logado
-    this.authService.user$.subscribe((user) => {
+    this.authService.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
       this.user = user;
     });
     if (this.authService.isLoggedIn() && !this.user) {
@@ -132,6 +140,7 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.horariosRequest?.unsubscribe();
     if (this.carouselInterval) clearInterval(this.carouselInterval);
     if (this.mapa) {
       this.mapa.remove();
@@ -143,7 +152,7 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.carregando = true;
     this.http.get<Barbearia>(`${this.apiUrl}/barbearias/${slug}`).subscribe({
       next: (data) => {
-        this.barbearia = data;
+        this.barbearia = { ...data, barbeiros: data.barbeiros.filter(b => b.ativo !== false) };
         this.carregando = false;
         this.iniciarCarrossel();
         setTimeout(() => this.inicializarMapa(), 300);
@@ -335,71 +344,59 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   gerarHorariosDoDia() {
-    if (!this.barbeiroSelecionado || !this.dataSelecionada) return;
-    const dia = this.datasDisponiveis.find((d) => d.data === this.dataSelecionada);
-    if (!dia) return;
-
-    const horarioDia = this.barbeiroSelecionado.horarios.find((h) => h.diaSemana === dia.diaSemana);
-    if (!horarioDia) return;
-
-    const slots: string[] = [];
-    const [iniH, iniM] = horarioDia.horaInicio.split(':').map(Number);
-    const [fimH, fimM] = horarioDia.horaFim.split(':').map(Number);
-    let almIniMin = -1;
-    let almFimMin = -1;
-    if (horarioDia.almocoInicio && horarioDia.almocoFim) {
-      const [aH, aM] = horarioDia.almocoInicio.split(':').map(Number);
-      const [bH, bM] = horarioDia.almocoFim.split(':').map(Number);
-      almIniMin = aH * 60 + aM;
-      almFimMin = bH * 60 + bM;
-    }
-
-    // Verificar se é hoje para filtrar horários passados
-    const hoje = this.getHojeLocal();
-    const isHoje = this.dataSelecionada === hoje;
-    const agora = new Date();
-    const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
-
-    let atual = iniH * 60 + iniM;
-    const fim = fimH * 60 + fimM;
-
-    while (atual < fim) {
-      // Pular horário de almoço
-      if (almIniMin >= 0 && atual >= almIniMin && atual < almFimMin) {
-        atual = almFimMin;
-        continue;
-      }
-      // Pular horários já passados se for hoje
-      if (!isHoje || atual > minutosAgora) {
-        const h = String(Math.floor(atual / 60)).padStart(2, '0');
-        const m = String(atual % 60).padStart(2, '0');
-        slots.push(`${h}:${m}`);
-      }
-      atual += 60; // slots de 1 hora
-    }
-
-    this.horariosGerados = slots;
-
-    // Buscar horários já ocupados
-    this.carregandoHorarios = true;
+    this.horariosRequest?.unsubscribe();
+    this.horariosGerados = [];
     this.horariosOcupados = [];
-    this.http
-      .get<
-        string[]
-      >(`${this.apiUrl}/agendamentos/ocupados/${this.barbeiroSelecionado.id}?data=${this.dataSelecionada}`)
-      .subscribe({
-        next: (ocupados) => {
-          this.horariosOcupados = ocupados;
-          this.horariosGerados = this.horariosGerados.filter((h) => !ocupados.includes(h));
-          this.carregandoHorarios = false;
-        },
-        error: () => {
-          this.carregandoHorarios = false;
-        },
-      });
+    this.horarioSelecionado = '';
+    this.erroHorarios = '';
+    this.carregandoHorarios = false;
+    if (!this.barbeiroSelecionado || !this.dataSelecionada || !this.servicoSelecionado) return;
+    const dia = this.datasDisponiveis.find(d => d.data === this.dataSelecionada);
+    if (!dia) return;
+    const duracao = this.servicoSelecionado.duracao;
+    if (!Number.isInteger(duracao) || duracao <= 0) return;
+    const minutos = (hora: string) => {
+      const [h, m] = hora.split(':').map(Number);
+      return h * 60 + m;
+    };
+    const agora = new Date();
+    const isHoje = this.dataSelecionada === this.getHojeLocal();
+    const slots = new Set<string>();
+    for (const horario of this.barbeiroSelecionado.horarios.filter(h => h.diaSemana === dia.diaSemana)) {
+      const fim = minutos(horario.horaFim);
+      const almocoInicio = horario.almocoInicio ? minutos(horario.almocoInicio) : -1;
+      const almocoFim = horario.almocoFim ? minutos(horario.almocoFim) : -1;
+      for (let atual = minutos(horario.horaInicio); atual + duracao <= fim; atual += duracao) {
+        if (almocoInicio >= 0 && atual < almocoFim && atual + duracao > almocoInicio) {
+          atual = almocoFim - duracao;
+          continue;
+        }
+        if (isHoje && atual <= agora.getHours() * 60 + agora.getMinutes()) continue;
+        slots.add(`${String(Math.floor(atual / 60)).padStart(2, '0')}:${String(atual % 60).padStart(2, '0')}`);
+      }
+    }
+    this.carregandoHorarios = true;
+    this.horariosRequest = this.http.get<string[]>(
+      `${this.apiUrl}/agendamentos/ocupados/${this.barbeiroSelecionado.id}`,
+      { params: { data: this.dataSelecionada, duracao } },
+    ).pipe(timeout(60_000), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ocupados => {
+        this.horariosOcupados = ocupados;
+        this.horariosGerados = [...slots].filter(h => !ocupados.includes(h)).sort();
+        this.carregandoHorarios = false;
+      },
+      error: error => {
+        this.carregandoHorarios = false;
+        this.horariosGerados = [];
+        this.erroHorarios = getAuthRequestErrorMessage(error,
+          'Não foi possível verificar os horários. Tente novamente.',
+          'A consulta de horários demorou demais. Tente novamente.');
+      },
+    });
   }
 
   selecionarHorario(horario: string) {
+    if (this.carregandoHorarios || this.erroHorarios || !this.horariosGerados.includes(horario)) return;
     this.horarioSelecionado = horario;
     this.etapa = 4;
   }
@@ -414,6 +411,9 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
   // Fluxo de agendamento
   // ==============================
   selecionarBarbeiro(barbeiro: Barbeiro) {
+    this.horariosRequest?.unsubscribe();
+    this.horariosGerados = [];
+    this.erroHorarios = '';
     this.barbeiroSelecionado = barbeiro;
     this.dataSelecionada = '';
     this.horarioSelecionado = '';
@@ -423,15 +423,16 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get servicosDoBarbeiro(): Servico[] {
     if (!this.barbeiroSelecionado) return [];
-    // Serviços vinculados ao barbeiro selecionado
-    if (this.barbeiroSelecionado.servicos && this.barbeiroSelecionado.servicos.length > 0) {
-      return this.barbeiroSelecionado.servicos;
-    }
-    // Fallback: serviços sem barbeiro específico (da barbearia)
-    return this.barbearia?.servicos?.filter((s: any) => !s.barbeiroId) || [];
+    const especificos = this.barbeiroSelecionado.servicos || [];
+    const gerais = this.barbearia?.servicos?.filter(s => !s.barbeiroId) || [];
+    return [...new Map([...especificos, ...gerais].map(s => [s.id, s])).values()];
   }
 
   selecionarServico(servico: Servico) {
+    this.horariosRequest?.unsubscribe();
+    this.dataSelecionada = '';
+    this.horarioSelecionado = '';
+    this.horariosGerados = [];
     this.servicoSelecionado = servico;
     this.gerarDatasDisponiveis();
     this.etapa = 3;
@@ -491,6 +492,8 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   confirmarAgendamento() {
     if (
+      this.salvandoAgendamento ||
+      !this.dataSelecionada || !this.horarioSelecionado ||
       !this.confirmacaoValida ||
       !this.barbearia ||
       !this.barbeiroSelecionado ||
@@ -505,14 +508,16 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
     const payload = {
       data: this.dataSelecionada,
       horario: this.horarioSelecionado,
-      nomeCliente: this.nomeCliente,
+      nomeCliente: this.nomeCliente.trim(),
       telefoneCliente: this.telefoneCliente,
       barbeariaId: this.barbearia.id,
       barbeiroId: this.barbeiroSelecionado.id,
       servicoId: this.servicoSelecionado.id,
     };
 
-    this.http.post<any>(`${this.apiUrl}/agendamentos`, payload).subscribe({
+    this.http.post<{ agendamento: { id: string }; guestAccessToken?: string }>(`${this.apiUrl}/agendamentos`, payload)
+      .pipe(timeout(60_000), takeUntilDestroyed(this.destroyRef), finalize(() => this.salvandoAgendamento = false))
+      .subscribe({
       next: (res) => {
         if (res.guestAccessToken) saveGuestReceipt(res.agendamento.id, res.guestAccessToken);
         this.salvandoAgendamento = false;
@@ -520,25 +525,17 @@ export class AgendarComponent implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (err) => {
         this.salvandoAgendamento = false;
-        this.erroAgendamento = err.error?.message || 'Erro ao salvar agendamento.';
+        this.erroAgendamento = err.status === 401
+          ? 'Sua sessão expirou. Entre novamente antes de agendar.'
+          : getAuthRequestErrorMessage(err, 'Erro ao salvar agendamento.',
+            'O servidor demorou para confirmar. Confira seu agendamento antes de tentar novamente.');
       },
     });
   }
 
   fecharSucesso() {
-    // Se o usuário está logado, redirecionar para meus agendamentos
-    if (this.user) {
-      this.router.navigate(['/meus-agendamentos']);
-    } else {
-      this.agendamentoConfirmado = false;
-      this.etapa = 1;
-      this.barbeiroSelecionado = null;
-      this.dataSelecionada = '';
-      this.horarioSelecionado = '';
-      this.servicoSelecionado = null;
-      this.nomeCliente = '';
-      this.telefoneCliente = '';
-    }
+    this.agendamentoConfirmado = false;
+    void this.router.navigate(['/barbearias']);
   }
 
   voltarInicio() {

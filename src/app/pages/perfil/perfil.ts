@@ -120,9 +120,9 @@ export class PerfilComponent implements OnInit {
     this.mensagem = '';
 
     const formData = new FormData();
-    formData.append('avatar', file);
+    formData.append('file', file);
 
-    this.http.post<{ message: string; user: User }>(`${this.apiUrl}/avatar`, formData).subscribe({
+    this.http.post<{ message: string; avatar: string }>(`${this.apiUrl}/avatar`, formData).subscribe({
       next: (res) => {
         this.uploadingAvatar = false;
         this.mensagem = res.message;
@@ -179,7 +179,7 @@ export class PerfilComponent implements OnInit {
 
   excluirConta() {
     if (confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')) {
-      this.http.delete(`${this.apiUrl}/profile`).subscribe({
+      this.http.delete(`${this.apiUrl}/account`).subscribe({
         next: () => {
           this.authService.logout();
         },

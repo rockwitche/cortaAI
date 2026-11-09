@@ -20,10 +20,13 @@ export interface AuthResponse {
   message?: string;
   requiresVerification?: boolean;
   email?: string;
+  rememberMe?: boolean;
+  verificationEmailSent?: boolean;
 }
 
 export interface EmailCheckResponse {
   exists: boolean;
+  pendingVerification?: boolean;
   valid: boolean;
   reason: string | null;
 }
@@ -53,12 +56,14 @@ export class AuthService {
   private readonly sessionHintKey = 'barberbook:session-hint';
   private readonly cachedUserKey = 'barberbook:cached-user';
   private readonly pendingVerificationTokenKey = 'pending_verification_token';
+  private readonly googleRememberKey = 'google_remember';
   // Render's free instances can take close to a minute to wake up. Requests must
   // still be bounded so a failed upstream service never leaves the UI loading forever.
   private readonly requestTimeoutMs = 60_000;
   private readonly apiUrl = this.resolveApiUrl();
   private readonly userSubject = new BehaviorSubject<User | null>(null);
   private sessionRestoreInFlight: Promise<User | null> | null = null;
+  private sessionVersion = 0;
 
   user$ = this.userSubject.asObservable();
 
@@ -152,7 +157,7 @@ export class AuthService {
       tap((res) => {
         this.persistVerificationFromResponse(res);
         if (res.user) {
-          this.establishSession(res.user, false);
+          this.establishSession(res.user, res.rememberMe === true);
           this.clearPendingVerificationToken();
         }
       }),
@@ -206,14 +211,17 @@ export class AuthService {
       return this.sessionRestoreInFlight;
     }
 
+    const version = this.sessionVersion;
     const request = firstValueFrom(
       this.withTimeout(this.http.get<User>(`${this.apiUrl}/me`, this.buildAuthOptions())),
     )
       .then((user) => {
-        this.updateUserState(user);
+        if (version !== this.sessionVersion) return null;
+        this.establishSession(user, this.isRememberedSession());
         return user;
       })
       .catch((err: { status?: number }) => {
+        if (version !== this.sessionVersion) return null;
         // Só invalidamos a sessão quando o backend confirmou que ela não é mais válida.
         // Falhas de rede e cold start mantêm o usuário em cache e podem ser tentados novamente.
         if (err?.status === 401 || err?.status === 403) {
@@ -221,7 +229,8 @@ export class AuthService {
           this.clearSession();
         }
 
-        return this.userSubject.value;
+        // Uma falha de rede não pode autorizar uma rota usando apenas o cache.
+        return null;
       });
 
     this.sessionRestoreInFlight = request;
@@ -238,6 +247,8 @@ export class AuthService {
   // LOGOUT
   // ========================
   logout(): void {
+    this.sessionVersion++;
+    this.sessionRestoreInFlight = null;
     // A interface encerra a sessão imediatamente; a chamada em segundo plano
     // limpa o cookie HttpOnly no servidor.
     this.userSubject.next(null);
@@ -256,6 +267,26 @@ export class AuthService {
   // ========================
   // HELPERS DE SESSÃO
   // ========================
+  loginWithGoogle(tipo: 'CLIENTE' | 'BARBEIRO' = 'CLIENTE', rememberMe = false): void {
+    this.getStorage(false)?.setItem(this.googleRememberKey, rememberMe ? '1' : '0');
+    const params = new URLSearchParams({ tipo, rememberMe: String(rememberMe) });
+    window.location.assign(`${this.apiUrl}/google?${params}`);
+  }
+
+  async completeGoogleLogin(): Promise<User> {
+    const user = await firstValueFrom(
+      this.withTimeout(this.http.get<User>(`${this.apiUrl}/me`, { withCredentials: true })),
+    );
+    this.establishSession(user, this.getStorage(false)?.getItem(this.googleRememberKey) === '1');
+    this.getStorage(false)?.removeItem(this.googleRememberKey);
+    this.clearPendingVerificationToken();
+    return user;
+  }
+
+  homeFor(user: User): string {
+    return user.tipo === 'BARBEIRO' ? '/dashboard' : '/barbearias';
+  }
+
   getToken(): string | null {
     return getStoredAuthToken();
   }
@@ -286,6 +317,9 @@ export class AuthService {
   }
 
   private establishSession(user: User, rememberMe: boolean): void {
+    this.sessionVersion++;
+    this.sessionRestoreInFlight = null;
+    this.getStorage(true)?.removeItem(LEGACY_TOKEN_KEY);
     this.markSessionForCurrentBrowser(rememberMe);
     this.persistCachedUser(user, rememberMe);
     this.userSubject.next(user);
@@ -361,6 +395,7 @@ export class AuthService {
   }
 
   private clearSession(): void {
+    this.clearPendingVerificationToken();
     const persistentStorage = this.getStorage(true);
     const sessionStorage = this.getStorage(false);
 

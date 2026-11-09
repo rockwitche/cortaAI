@@ -1,6 +1,17 @@
 import { Routes } from '@angular/router';
+import { barberGuard } from './auth/barber.guard';
+import { sessionGuard } from './auth/session.guard';
 
 export const routes: Routes = [
+  {
+    path: 'meus-agendamentos',
+    canActivate: [sessionGuard],
+    loadComponent: () => import('./pages/meus-agendamentos/meus-agendamentos').then(m => m.MeusAgendamentosComponent),
+  },
+  {
+    path: 'auth/google/callback',
+    loadComponent: () => import('./auth/google-callback').then(m => m.GoogleCallbackComponent),
+  },
   { path: '', pathMatch: 'full', redirectTo: 'barbearias' },
   {
     path: 'barbearias',
@@ -16,6 +27,7 @@ export const routes: Routes = [
   },
   {
     path: 'perfil',
+    canActivate: [sessionGuard],
     loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilComponent),
   },
   {
@@ -24,14 +36,9 @@ export const routes: Routes = [
       import('./pages/agendar/agendar').then((m) => m.AgendarComponent),
   },
   {
-    path: 'meus-agendamentos',
-    loadComponent: () =>
-      import('./pages/meus-agendamentos/meus-agendamentos').then(
-        (m) => m.MeusAgendamentosComponent,
-      ),
-  },
-  {
     path: 'dashboard',
+    canActivate: [barberGuard],
+    canActivateChild: [barberGuard],
     loadComponent: () =>
       import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
     children: [

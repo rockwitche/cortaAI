@@ -35,71 +35,80 @@
         </header>
 
         @if (emailVerificacao) {
-          <app-confirmar-email [email]="emailVerificacao" />
+          <app-confirmar-email [email]="emailVerificacao" [aviso]="avisoVerificacao" />
         } @else {
-        <form (ngSubmit)="aoEnviar()" class="formulario-login">
-          @if (erro) {
-            <div class="mensagem-erro" role="alert">
-              <i class="fa-solid fa-circle-exclamation"></i>
-              {{ erro }}
-            </div>
-          }
-
-          <div class="campo">
-            <label for="email">E-mail</label>
-            <div class="campo-input">
-              <i class="fa-solid fa-envelope"></i>
-              <input
-                type="email"
-                id="email"
-                [(ngModel)]="email"
-                name="email"
-                placeholder="seu@email.com"
-                autocomplete="email"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="campo">
-            <div class="linha-label">
-              <label for="senha">Senha</label>
-            </div>
-            <div class="campo-input">
-              <i class="fa-solid fa-lock"></i>
-              <input
-                type="password"
-                id="senha"
-                [(ngModel)]="senha"
-                name="senha"
-                placeholder="Digite sua senha"
-                autocomplete="current-password"
-                required
-              />
-            </div>
-          </div>
-
-          <label class="opcao-lembrete" for="lembrarConta">
-            <input
-              type="checkbox"
-              id="lembrarConta"
-              [(ngModel)]="lembrarConta"
-              name="lembrarConta"
-            />
-            <span>
-              <strong>Lembrar desta conta</strong>
-              <small>Somente neste dispositivo</small>
-            </span>
-          </label>
-
-          <button type="submit" class="botao-login" [disabled]="carregando">
-            @if (carregando) {
-              <i class="fa-solid fa-spinner fa-spin"></i> Entrando...
-            } @else {
-              Entrar <i class="fa-solid fa-arrow-right"></i>
+          <form (ngSubmit)="aoEnviar()" class="formulario-login">
+            @if (erro) {
+              <div class="mensagem-erro" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ erro }}
+              </div>
             }
-          </button>
-        </form>
+
+            <div class="campo">
+              <label for="email">E-mail</label>
+              <div class="campo-input">
+                <i class="fa-solid fa-envelope"></i>
+                <input
+                  type="email"
+                  id="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  placeholder="seu@email.com"
+                  autocomplete="email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="campo">
+              <div class="linha-label">
+                <label for="senha">Senha</label>
+              </div>
+              <div class="campo-input">
+                <i class="fa-solid fa-lock"></i>
+                <input
+                  type="password"
+                  id="senha"
+                  [(ngModel)]="senha"
+                  name="senha"
+                  placeholder="Digite sua senha"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+            </div>
+
+            <label class="opcao-lembrete" for="lembrarConta">
+              <input
+                type="checkbox"
+                id="lembrarConta"
+                [(ngModel)]="lembrarConta"
+                name="lembrarConta"
+              />
+              <span>
+                <strong>Lembrar desta conta</strong>
+                <small>Somente neste dispositivo</small>
+              </span>
+            </label>
+
+            <button type="submit" class="botao-login" [disabled]="carregando">
+              @if (carregando) {
+                <i class="fa-solid fa-spinner fa-spin"></i> Entrando...
+              } @else {
+                Entrar <i class="fa-solid fa-arrow-right"></i>
+              }
+            </button>
+            <div class="divisor">ou</div>
+            <button
+              type="button"
+              class="botao-google"
+              (click)="entrarComGoogle()"
+              [disabled]="carregando"
+            >
+              <i class="fa-brands fa-google" aria-hidden="true"></i> Continuar com Google
+            </button>
+          </form>
         }
 
         <p class="link-registro">

@@ -22,8 +22,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   ): Promise<any> {
     const { id, emails, displayName, photos } = profile;
 
-    if (!emails || emails.length === 0) {
-      return done(new UnauthorizedException('E-mail não disponível no perfil Google.'), false);
+    const verified =
+      profile._json?.email_verified === true ||
+      profile._json?.verified_email === true;
+    if (!emails?.[0]?.value || !verified) {
+      return done(
+        new UnauthorizedException('E-mail não verificado no perfil Google.'),
+        false,
+      );
     }
 
     const user = {

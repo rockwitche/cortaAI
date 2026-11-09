@@ -182,7 +182,6 @@ export class BarbeariasBuscaComponent implements OnInit, OnDestroy {
   // ==============================
   buscarBarbearias() {
     if (!this.estadoSelecionado || !this.cidadeSelecionada) return;
-
     this.cancelarBusca();
     const identificadorBusca = this.sequenciaBusca;
     this.buscandoBarbearias = true;
@@ -190,14 +189,14 @@ export class BarbeariasBuscaComponent implements OnInit, OnDestroy {
     this.limparCarrosseis();
 
     this.buscaAtiva = this.clienteHttp
-      .get<any[]>(`${this.urlApi}/search`, {
+      .get<any[]>(this.urlApi, {
         params: {
-          estado: this.estadoSelecionado.sigla,
-          cidade: this.cidadeSelecionada.nome,
+          ...(this.estadoSelecionado ? { estado: this.estadoSelecionado.sigla } : {}),
+          ...(this.cidadeSelecionada ? { cidade: this.cidadeSelecionada.nome } : {}),
         },
       })
       .pipe(
-        timeout(8_000),
+        timeout(30_000),
         finalize(() => {
           if (identificadorBusca !== this.sequenciaBusca) {
             return;

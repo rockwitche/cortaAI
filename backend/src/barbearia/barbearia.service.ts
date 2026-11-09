@@ -71,7 +71,13 @@ export class BarbeariaService {
 
   async findBySlugOuId(slugOuId: string) {
     const incluir = {
-      barbeiros: { include: { servicos: { where: { ativo: true } } }, orderBy: { createdAt: 'asc' as const } },
+      barbeiros: {
+        include: {
+          horarios: { orderBy: { diaSemana: 'asc' as const } },
+          servicos: { where: { ativo: true } },
+        },
+        orderBy: { createdAt: 'asc' as const },
+      },
       servicos: { where: { ativo: true }, orderBy: { createdAt: 'asc' as const } },
     };
     const porSlug = await this.prisma.barbearia.findUnique({ where: { slug: slugOuId }, include: incluir });

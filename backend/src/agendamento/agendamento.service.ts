@@ -470,16 +470,31 @@ export class AgendamentoService {
   }
 
   // Buscar horários ocupados de um barbeiro em uma data
-  async horariosOcupados(barbeiroId: string, data: string): Promise<string[]> {
+  async horariosOcupados(barbeiroId: string, data: string, duracao?: number): Promise<string[]> {
+    if (duracao !== undefined && (!Number.isInteger(duracao) || duracao < 1 || duracao > 1440)) {
+      throw new BadRequestException('Duração inválida.');
+    }
     const agendamentos = await this.prisma.agendamento.findMany({
       where: {
         barbeiroId,
         data,
         status: { notIn: ['CANCELADO'] },
       },
-      select: { horario: true },
+      select: { horario: true, servico: { select: { duracao: true } } },
     });
-    return agendamentos.map((a) => a.horario);
+    // Mantém o contrato antigo quando a duração não foi informada.
+    if (duracao === undefined) return agendamentos.map((a) => a.horario);
+    const indisponiveis = new Set<string>();
+    for (const agendamento of agendamentos) {
+      const [hora, minuto] = agendamento.horario.split(':').map(Number);
+      const inicio = hora * 60 + minuto;
+      const fim = Math.min(1440, inicio + agendamento.servico.duracao);
+      // Inícios que fariam o serviço escolhido sobrepor o intervalo já reservado.
+      for (let t = Math.max(0, inicio - duracao + 1); t < fim; t++) {
+        indisponiveis.add(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`);
+      }
+    }
+    return [...indisponiveis].sort();
   }
 
   // Buscar agendamentos que precisam de lembrete (30 min antes)

@@ -9,9 +9,7 @@ import { AuthResponse, AuthService, EmailCheckResponse } from '../../auth/auth.s
 import { getAuthRequestErrorMessage } from '../../auth/auth-request-error';
 
 type EmailCheckResult =
-  | { email: string; resposta: EmailCheckResponse }
-  | { email: string; erro: unknown }
-  | null;
+  { email: string; resposta: EmailCheckResponse } | { email: string; erro: unknown } | null;
 
 @Component({
   selector: 'app-registro',
@@ -24,6 +22,7 @@ export class RegistroComponent {
   nome = '';
   email = '';
   emailVerificacao = '';
+  avisoVerificacao = '';
   senha = '';
   confirmarSenha = '';
   telefone = '';
@@ -103,6 +102,10 @@ export class RegistroComponent {
         if (!resposta.valid) {
           this.erroEmail = resposta.reason || 'Este domínio de e-mail não existe.';
           this.emailValido = false;
+        } else if (resposta.pendingVerification) {
+          this.erroEmail = '';
+          this.emailValido = true;
+          this.avisoCadastroPendente = 'Este e-mail aguarda confirmação. Use a senha do primeiro cadastro para retomar a verificação. Seus dados anteriores serão mantidos.';
         } else if (resposta.exists) {
           this.erroEmail = resposta.reason || 'Este e-mail já está cadastrado.';
           this.emailValido = false;
@@ -114,6 +117,7 @@ export class RegistroComponent {
   }
 
   aoAlterarEmail() {
+    this.avisoCadastroPendente = '';
     this.emailValido = false;
     this.erroEmail = '';
     this.verificandoEmail = false;
@@ -123,6 +127,7 @@ export class RegistroComponent {
   aoAlterarTelefone() {
     this.telefoneValido = this.validarTelefone(this.telefone);
   }
+  avisoCadastroPendente = '';
 
   private normalizarEmail(email: string): string {
     return email.trim().toLowerCase();
@@ -141,7 +146,7 @@ export class RegistroComponent {
     const s = this.senha;
 
     this.senhaRequisitos = {
-      minLength: s.length >= 6,
+      minLength: s.length >= 8,
       uppercase: /[A-Z]/.test(s),
       lowercase: /[a-z]/.test(s),
       number: /[0-9]/.test(s),
@@ -156,7 +161,7 @@ export class RegistroComponent {
   }
 
   get senhaValida(): boolean {
-    return Object.values(this.senhaRequisitos).every(Boolean);
+    return this.senha.length >= 8 && new TextEncoder().encode(this.senha).length <= 72;
   }
 
   get formValido(): boolean {
@@ -179,7 +184,7 @@ export class RegistroComponent {
 
     this.servicoAuth
       .register({
-        nome: this.nome,
+        nome: this.nome.trim(),
         email: this.normalizarEmail(this.email),
         senha: this.senha,
         telefone: this.telefone,
@@ -207,10 +212,13 @@ export class RegistroComponent {
         // também impede que uma resposta antiga sem este campo pule essa etapa.
         if (resposta.requiresVerification !== false) {
           this.emailVerificacao = resposta.email || this.email.trim().toLowerCase();
+          this.avisoVerificacao = resposta.message || '';
           return;
         }
 
-        const navegou = await this.roteador.navigate(['/barbearias']);
+        const navegou = await this.roteador.navigateByUrl(
+          resposta.user ? this.servicoAuth.homeFor(resposta.user) : '/login',
+        );
 
         if (!navegou) {
           this.erro = 'A conta foi criada, mas não foi possível abrir a próxima página.';
@@ -220,5 +228,10 @@ export class RegistroComponent {
       this.erro = 'A conta foi criada, mas não foi possível abrir a próxima página.';
     }
   }
-
+
+  entrarComGoogle(): void {
+    if (this.carregando) return;
+    this.carregando = true;
+    this.servicoAuth.loginWithGoogle(this.tipo);
+  }
 }

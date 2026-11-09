@@ -37,6 +37,11 @@ export class DashboardComponent implements OnInit {
     private auth: AuthService,
   ) { }
 
+  sair(): void {
+    this.fecharMenuMobile();
+    this.auth.logout();
+  }
+
   ngOnInit() {
     this.atualizarViewport();
     this.auth.user$.subscribe((usuario) => (this.usuario = usuario));

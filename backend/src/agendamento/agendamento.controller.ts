@@ -7,12 +7,12 @@ import {
   Param,
   UseGuards,
   Req,
-  Headers,
-  UnauthorizedException,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard.js';
+import { BarberAuthGuard } from '../auth/guards/barber-auth.guard.js';
 import {
   CreateAgendamentoDto,
   ConsultaAgendamentosDto,
@@ -24,45 +24,17 @@ import type { Request } from 'express';
 export class AgendamentoController {
   constructor(
     private agendamentoService: AgendamentoService,
-    private jwtService: JwtService,
-    private prisma: PrismaService,
   ) {}
 
   // Criar agendamento (pode ser autenticado ou não)
   @Post()
+  @UseGuards(OptionalJwtAuthGuard)
   async create(
     @Body()
     body: CreateAgendamentoDto,
     @Req() req: Request,
-    @Headers('authorization') authHeader?: string,
   ) {
-    // Extrair userId do token se existir (sem obrigar auth)
-    let userId: string | undefined;
-    const bearerToken =
-      authHeader && authHeader.startsWith('Bearer ')
-        ? authHeader.split(' ')[1]
-        : undefined;
-    const cookieToken = (req as any)?.cookies?.token as string | undefined;
-    const token = bearerToken || cookieToken;
-
-    if (token) {
-      try {
-        const decoded = this.jwtService.verify(token, {
-          algorithms: ['HS256'],
-        }) as any;
-        if (decoded.purpose !== 'session' || typeof decoded.sub !== 'string')
-          throw new Error();
-        const user = await this.prisma.user.findUnique({
-          where: { id: decoded.sub },
-        });
-        if (!user?.emailVerified || user.authVersion !== decoded.authVersion)
-          throw new Error();
-        userId = decoded.sub;
-      } catch {
-        throw new UnauthorizedException('Faça login novamente para agendar.');
-      }
-    }
-
+    const userId = (req.user as { id: string } | undefined)?.id;
     return this.agendamentoService.create({ ...body, userId });
   }
 
@@ -75,7 +47,7 @@ export class AgendamentoController {
   }
 
   // Contagem de agendamentos do mês (para exibir uso do plano)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Get('uso-mensal')
   async usoMensal(@Req() req: Request) {
     const user = req.user as any;
@@ -83,7 +55,7 @@ export class AgendamentoController {
   }
 
   // Agenda do barbeiro (dono) - lista agendamentos das suas barbearias
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Get('agenda')
   async agenda(@Req() req: Request, @Param() params: any) {
     const user = req.user as any;
@@ -119,14 +91,15 @@ export class AgendamentoController {
   async horariosOcupados(
     @Param('barbeiroId') barbeiroId: string,
     @Req() req: Request,
+    @Query('duracao', new ParseIntPipe({ optional: true })) duracao?: number,
   ) {
     const data = (req.query as any).data as string;
     if (!data) return [];
-    return this.agendamentoService.horariosOcupados(barbeiroId, data);
+    return this.agendamentoService.horariosOcupados(barbeiroId, data, duracao);
   }
 
   // Listar agendamentos de uma barbearia
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Get('barbearia/:barbeariaId')
   async porBarbearia(
     @Param('barbeariaId') barbeariaId: string,
@@ -139,7 +112,7 @@ export class AgendamentoController {
   }
 
   // Atualizar status (barbeiro dono)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Put(':id/status')
   async updateStatus(
     @Param('id') id: string,
@@ -159,7 +132,7 @@ export class AgendamentoController {
   }
 
   // Buscar lembretes pendentes (barbeiro dono)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Get('lembretes/pendentes')
   async lembretesPendentes(@Req() req: Request) {
     const user = req.user as any;
@@ -167,7 +140,7 @@ export class AgendamentoController {
   }
 
   // Listar clientes do dono (agrupados por agendamentos)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Get('clientes')
   async clientes(@Req() req: Request) {
     const user = req.user as any;
@@ -175,7 +148,7 @@ export class AgendamentoController {
   }
 
   // Marcar lembrete como enviado
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(BarberAuthGuard)
   @Put(':id/lembrete-enviado')
   async marcarLembreteEnviado(@Param('id') id: string, @Req() req: Request) {
     const user = req.user as any;
