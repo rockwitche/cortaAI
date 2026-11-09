@@ -24,6 +24,13 @@ export const routes: Routes = [
       import('./pages/agendar/agendar').then((m) => m.AgendarComponent),
   },
   {
+    path: 'meus-agendamentos',
+    loadComponent: () =>
+      import('./pages/meus-agendamentos/meus-agendamentos').then(
+        (m) => m.MeusAgendamentosComponent,
+      ),
+  },
+  {
     path: 'dashboard',
     loadComponent: () =>
       import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
