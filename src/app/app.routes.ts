@@ -19,6 +19,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilComponent),
   },
   {
+    path: 'agendar/:slug',
+    loadComponent: () =>
+      import('./pages/agendar/agendar').then((m) => m.AgendarComponent),
+  },
+  {
     path: 'dashboard',
     loadComponent: () =>
       import('./pages/dashboard/dashboard').then((m) => m.DashboardComponent),
